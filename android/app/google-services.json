@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "387858945348",
+    "project_id": "ccmap-26dca",
+    "storage_bucket": "ccmap-26dca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387858945348:android:dafd5bc44c53233e743311",
+        "android_client_info": {
+          "package_name": "com.example.bike_sharing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCt-zZ01JRgIcIkUdmUHInRKsJKe9iuBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
