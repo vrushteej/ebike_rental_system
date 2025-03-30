@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:bike_sharing/auth_service.dart';
 import 'login_screen.dart';
+import 'map_screen.dart'; // Import your OpenStreetMap screen
 
 class HomeScreen extends StatefulWidget{
   const HomeScreen({super.key});
-
 
   @override
   State<StatefulWidget> createState() {
@@ -13,17 +13,20 @@ class HomeScreen extends StatefulWidget{
 }
 
 class _HomeScreenState extends State<HomeScreen>{
-  int _selectedIndex = 3;
+  int _selectedIndex = 0;  // Default to 0, Home tab
+
+  // List of Screens for the Bottom Navigation
+  final List<Widget> _screens = [
+    MapScreen(), // OpenStreetMapScreen will show when the home tab is selected
+    Center(child: Text("Chat Tab")),
+    Center(child: Text("Money Tab")),
+    Center(child: Text("Profile Tab")),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          "Selected: $_selectedIndex",
-          style: const TextStyle(fontSize: 24),
-        ),
-      ),
+      body: _screens[_selectedIndex], // Display the selected tab screen
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -54,15 +57,15 @@ class _HomeScreenState extends State<HomeScreen>{
         children: [
           Icon(icon, size: 28),
           if (_selectedIndex == index)
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            width: 20,
-            height: 3,
-            decoration: BoxDecoration(
-              color: Colors.tealAccent,
-              borderRadius: BorderRadius.circular(2),
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: 20,
+              height: 3,
+              decoration: BoxDecoration(
+                color: Colors.tealAccent,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
         ],
       ),
       label: '',

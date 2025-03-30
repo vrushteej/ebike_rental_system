@@ -16,7 +16,40 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // home: LandingPage(),
       home: LandingPage(),
+      theme: ThemeData(
+        extensions: <ThemeExtension<dynamic>>[
+          CustomTheme( // Add gradient theme
+            primaryGradient: const LinearGradient(
+              colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomTheme extends ThemeExtension<CustomTheme> {
+  final LinearGradient primaryGradient;
+
+  const CustomTheme({required this.primaryGradient});
+
+  @override
+  CustomTheme copyWith({LinearGradient? primaryGradient}) {
+    return CustomTheme(
+      primaryGradient: primaryGradient ?? this.primaryGradient,
+    );
+  }
+
+  @override
+  CustomTheme lerp(CustomTheme? other, double t) {
+    if (other is! CustomTheme) return this;
+    return CustomTheme(
+      primaryGradient: LinearGradient.lerp(primaryGradient, other.primaryGradient, t)!,
     );
   }
 }

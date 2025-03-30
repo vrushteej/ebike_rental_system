@@ -3,8 +3,10 @@ import 'package:bike_sharing/signup_screen.dart';
 import 'package:bike_sharing/verfication_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Add this for TextInputFormatter
 
 import 'auth_service.dart';
+import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
+  bool isPhoneNumberValid = false; // Track validity of the phone number
 
   void googleLogin() async {
     AuthService authService = AuthService();
@@ -27,17 +30,21 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Method to check for valid phone number
+  void validatePhoneNumber(String phoneNumber) {
+    // Update the isPhoneNumberValid flag based on length and numeric check
+    setState(() {
+      isPhoneNumberValid = phoneNumber.length == 10 && RegExp(r'^[0-9]+$').hasMatch(phoneNumber);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(),
@@ -74,10 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Navigate to the login screen when the "Log in" text is tapped
+                        // Navigate to the signup screen when the "Sign up" text is tapped
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => SignupScreen()), // Assuming your login screen is LoginScreen
+                          MaterialPageRoute(builder: (context) => SignupScreen()),
                         );
                       },
                       child: Text(
@@ -94,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               // Main White Card Section
-              // Main White Card Section (No Margin, Extends to Bottom)
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 45),
@@ -123,9 +129,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 border: InputBorder.none,
                               ),
                               keyboardType: TextInputType.phone,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly, // Only allow digits
+                              ],
+                              onChanged: (text) {
+                                // Validate phone number whenever the user types
+                                validatePhoneNumber(text);
+                              },
                             ),
                           ),
-                          const Icon(Icons.check_circle, color: Colors.green),
+                          // Conditionally show the tick icon based on validity
+                          isPhoneNumberValid
+                              ? const Icon(Icons.check_circle, color: Colors.green)
+                              : const Icon(Icons.check_circle, color: Colors.grey),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -139,10 +155,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Log in Button at the Bottom
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => VerificationScreen()),
-                          );
+                          String phoneNumber = phoneController.text.trim();
+
+                          // Validate phone number
+                          if (phoneNumber.isEmpty) {
+                            // Show an error if the field is empty
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please enter a phone number")),
+                            );
+                          } else if (!isPhoneNumberValid) {
+                            // Show an error if the phone number is invalid
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please enter a valid 10-digit phone number")),
+                            );
+                          } else {
+                            // Proceed to verification screen
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => VerificationScreen()),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent, // Make button background transparent to show gradient

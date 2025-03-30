@@ -2,6 +2,7 @@
 import 'login_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'main.dart';
 import 'signup_screen.dart';  // Import your signup screen
 
 class LandingPage extends StatelessWidget {
@@ -13,11 +14,7 @@ class LandingPage extends StatelessWidget {
       body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // To spread content evenly

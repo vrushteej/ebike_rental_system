@@ -1,9 +1,11 @@
 import 'package:bike_sharing/home_screen.dart';
+import 'package:bike_sharing/map_screen.dart';
 import 'package:bike_sharing/otp_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'login_screen.dart';
+import 'main.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({super.key});
@@ -71,11 +73,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(),
@@ -144,7 +142,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         onPressed: () {
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                            MaterialPageRoute(builder: (context) => MapScreen()),
                                 (Route<dynamic> route) => false,
                           );
                         },

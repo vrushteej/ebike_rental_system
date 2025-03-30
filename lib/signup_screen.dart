@@ -1,9 +1,11 @@
 import 'package:bike_sharing/home_screen.dart';
+import 'package:bike_sharing/map_screen.dart';
 import 'package:bike_sharing/verfication_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'login_screen.dart';
+import 'main.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -17,26 +19,85 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void signUp(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) {
-      return; // Stop execution if the form is invalid
+  // Error messages
+  String? emailError;
+  String? phoneError;
+  String? firstNameError;
+  String? lastNameError;
+
+  // Validate email format
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email cannot be empty';
     }
+    // Simple regex to check email validity
+    final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!regex.hasMatch(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
 
-    AuthService authService = AuthService();
-    User? user = await authService.signUpWithEmail(
-        emailController.text, passwordController.text);
+  // Validate phone number
+  String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number cannot be empty';
+    }
+    // Check if phone number has exactly 10 digits
+    final regex = RegExp(r'^[0-9]{10}$');
+    if (!regex.hasMatch(value)) {
+      return 'Please enter a valid 10-digit phone number';
+    }
+    return null;
+  }
 
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Signup Failed")),
-      );
+  // Validate first name
+  String? validateFirstName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'First name cannot be empty';
+    }
+    return null;
+  }
+
+  // Validate last name
+  String? validateLastName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name cannot be empty';
+    }
+    return null;
+  }
+
+  // Sign up method
+  void signUp(BuildContext context) async {
+    setState(() {
+      emailError = validateEmail(emailController.text);
+      phoneError = validatePhone(phoneController.text);
+      firstNameError = validateFirstName(firstNameController.text);
+      lastNameError = validateLastName(lastNameController.text);
+    });
+
+    if (emailError == null && phoneError == null && firstNameError == null && lastNameError == null) {
+      // Proceed with signup if there are no errors
+      AuthService authService = AuthService();
+      User? user = await authService.signUpWithEmail(
+          emailController.text, passwordController.text);
+
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MapScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Signup Failed")),
+        );
+      }
     }
   }
 
@@ -47,11 +108,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(),
@@ -117,37 +174,46 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   child: Column(
                     children: [
-                      TextField(
+                      // First Name Field
+                      TextFormField(
+                        controller: firstNameController,
                         decoration: InputDecoration(
                           hintText: 'First Name',
                           border: InputBorder.none,
+                          errorText: firstNameError,
                         ),
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.name,
                       ),
                       Divider(color: Colors.grey),
                       SizedBox(height: 16),
-                      TextField(
+
+                      // Last Name Field
+                      TextFormField(
+                        controller: lastNameController,
                         decoration: InputDecoration(
                           hintText: 'Last Name',
                           border: InputBorder.none,
+                          errorText: lastNameError,
                         ),
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.name,
                       ),
                       Divider(color: Colors.grey),
                       SizedBox(height: 16),
-                      TextField(
+
+                      // Email Field
+                      TextFormField(
+                        controller: emailController,
                         decoration: InputDecoration(
                           hintText: 'Email (Eg. xyz@gmail.com)',
                           border: InputBorder.none,
+                          errorText: emailError,
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
                       Divider(color: Colors.grey),
-                      // Text(
-                      //   'This email is already registered!',
-                      //   style: TextStyle(color: Colors.red),
-                      // ),
                       SizedBox(height: 16),
+
+                      // Phone Number Field
                       Row(
                         children: [
                           Text(
@@ -157,10 +223,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           Icon(Icons.arrow_drop_down, color: Colors.grey),
                           SizedBox(width: 8),
                           Expanded(
-                            child: TextField(
+                            child: TextFormField(
+                              controller: phoneController,
                               decoration: InputDecoration(
                                 hintText: 'Phone no. (Eg. 12345 67890)',
                                 border: InputBorder.none,
+                                errorText: phoneError,
                               ),
                               keyboardType: TextInputType.phone,
                             ),
@@ -169,17 +237,17 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       Divider(color: Colors.grey),
                       SizedBox(height: 16),
+
                       Text(
                         'Sign up with your e-mail and phone number',
                         style: TextStyle(color: Colors.grey),
                       ),
                       const Spacer(),
+
+                      // Sign up Button
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => VerificationScreen()),
-                          );
+                          signUp(context); // Call the sign-up method
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent, // Make button background transparent to show gradient

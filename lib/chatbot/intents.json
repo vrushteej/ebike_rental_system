@@ -1,0 +1,120 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey",
+        "Is anyone there?",
+        "Good day",
+        "What's up?"
+      ],
+      "responses": [
+        "Hello! Welcome to our bicycle rental service. How can I assist you?",
+        "Hey there! Need help renting a bike?",
+        "Hi! How can I make your biking experience better?"
+      ]
+    },
+    {
+      "tag": "bike_availability",
+      "patterns": [
+        "Are there any bikes available?",
+        "Do you have bikes right now?",
+        "Can I rent a bike now?",
+        "Is a bicycle available for rent?"
+      ],
+      "responses": [
+        "Yes! We have bikes available. You can check real-time availability in the app.",
+        "Availability depends on your location. Open the app to see nearby bikes.",
+        "Yes, you can rent a bike now! Just select a bike from the app and start your ride."
+      ]
+    },
+    {
+      "tag": "rental_cost",
+      "patterns": [
+        "How much does it cost to rent a bike?",
+        "What are your rental prices?",
+        "How much is bike rental?",
+        "What are the charges for renting a bicycle?"
+      ],
+      "responses": [
+        "Our rental prices start at $X per hour. Check the app for more details!",
+        "The cost depends on the rental duration. You can see pricing in the app.",
+        "Bike rental starts from $X. Let me know if you need more details."
+      ]
+    },
+    {
+      "tag": "rental_duration",
+      "patterns": [
+        "How long can I rent a bike?",
+        "Is there a time limit on rentals?",
+        "Can I rent a bike for a full day?",
+        "What is the maximum rental period?"
+      ],
+      "responses": [
+        "You can rent a bike for as long as you need! We offer hourly and daily rentals.",
+        "Yes! You can rent for a short trip or an entire day. The app shows available durations.",
+        "There is no strict limit! Just check the app for rental options."
+      ]
+    },
+    {
+      "tag": "return_bike",
+      "patterns": [
+        "Where do I return the bike?",
+        "How do I end my rental?",
+        "Where can I drop off the bike?",
+        "Do I need to return the bike to the same place?"
+      ],
+      "responses": [
+        "You can return the bike at any designated drop-off location. Check the app for nearby stations!",
+        "Just park it at a bike station and lock it. The app will confirm your return.",
+        "You can return the bike to any available station. Need help? Let me know!"
+      ]
+    },
+    {
+      "tag": "payment",
+      "patterns": [
+        "How do I pay for the rental?",
+        "What payment methods do you accept?",
+        "Can I pay with a credit card?",
+        "Do you accept online payments?"
+      ],
+      "responses": [
+        "We accept credit cards, debit cards, and digital wallets. Pay securely via the app!",
+        "Yes, you can pay online using various payment methods.",
+        "Payments can be made directly in the app using your preferred method."
+      ]
+    },
+    {
+      "tag": "support",
+      "patterns": [
+        "I have a problem with my bike",
+        "What if my bike breaks down?",
+        "How do I contact support?",
+        "I need help with my rental"
+      ],
+      "responses": [
+        "No worries! Contact our support team via the app or call our helpline.",
+        "If you have an issue, report it through the app, and we'll assist you.",
+        "Need help? Reach out to our 24/7 support for quick assistance."
+      ]
+    },
+    {
+      "tag": "farewell",
+      "patterns": [
+        "Bye",
+        "Goodbye",
+        "See you later",
+        "Thanks",
+        "Thank you"
+      ],
+      "responses": [
+        "You're welcome! Have a great ride! 🚴‍♂️",
+        "Thank you for using our service! Ride safe!",
+        "See you next time! Happy cycling!"
+      ]
+    }
+  ]
+  
+}

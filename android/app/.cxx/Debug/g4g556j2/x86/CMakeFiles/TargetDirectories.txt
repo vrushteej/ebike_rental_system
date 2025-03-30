@@ -1,0 +1,2 @@
+C:/Users/Vrushtee Jasani/VRJ/Internship/ebike_rental_system/android/app/.cxx/Debug/g4g556j2/x86/CMakeFiles/edit_cache.dir
+C:/Users/Vrushtee Jasani/VRJ/Internship/ebike_rental_system/android/app/.cxx/Debug/g4g556j2/x86/CMakeFiles/rebuild_cache.dir
