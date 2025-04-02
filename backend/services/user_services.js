@@ -1,54 +1,73 @@
 const userModel = require('../models/user_model');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 
 class userService {
     static async registerUser(email, phone, password) {
         try {
-            // Check if a user with the same email or phone already exists
-            const existingUser = await userModel.findOne({ 
-                $or: [{ email }, { phone }] 
-            });
-    
+            // Check if user already exists
+            const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
             if (existingUser) {
-                throw new Error("User with this email or phone number already exists.");
+                throw new Error("User with this email or phone already exists.");
             }
-    
-            // Create a new user if no duplicate is found
-            const createUser = new userModel({ email, phone, password });
-            return await createUser.save();
+
+            // Create new user
+            const newUser = new userModel({ email, phone, password });
+            await newUser.save();
+
+            return { message: "User registered successfully", user: newUser };
         } catch (err) {
             throw err;
         }
     }
-    
+
     static async loginUser(email, phone, password) {
         try {
-            // Check if user exists by email or phone
-            const user = await userModel.findOne({ 
-                $or: [{ email }, { phone }] 
-            });
-    
-            if (!user) {
-                throw new Error('User not found');
-            }
-    
-            // Check if password matches
+            // Find user by email or phone
+            const user = await userModel.findOne({ $or: [{ email }, { phone }] });
+            if (!user) throw new Error('User not found');
+
+            // Validate password
             const isMatch = await user.comparePassword(password);
-            if (!isMatch) {
-                throw new Error('Invalid credentials');
-            }
-    
-            // Return a structured response with a message
-            return { message: 'Login successful' };  // Add any additional data if needed
+            if (!isMatch) throw new Error('Invalid credentials');
+
+            // Generate token
+            const tokenData = { userId: user._id };
+            const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+
+            return { message: 'Login successful', userId: user._id, token };
         } catch (error) {
-            throw error;  // Rethrow the error to be caught by the controller
+            throw error;
         }
     }
-    
-    
-    static async generateToken(tokenData, secretKey, jwt_expire) {
-        return jwt.sign(tokenData, secretKey, { expiresIn: jwt_expire });
+
+    static async updateUserDetails(userId, email, password) {
+        try {
+            const updateData = {};
+
+            if (email) updateData.email = email;
+            if (password) {
+                const salt = await bcrypt.genSalt(10);
+                updateData.password = await bcrypt.hash(password, salt);
+            }
+
+            const updatedUser = await userModel.findByIdAndUpdate(userId, updateData, { new: true });
+            if (!updatedUser) throw new Error('User not found');
+
+            return updatedUser;
+        } catch (error) {
+            throw error;
+        }
     }
-}    
+
+    static async getUserById(userId) {
+        try {
+            const user = await userModel.findById(userId); // This will return all fields, including the hashed password
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+}
 
 module.exports = userService;
