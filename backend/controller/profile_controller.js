@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 exports.createProfile = async (req, res, next) => {
     try {
-        const { userId, firstName, lastName, address, dob, gender } = req.body;
+        const { userId} = req.params;
+        const {firstName, lastName, address, dob, gender } = req.body;
 
         // Ensure userId is a valid ObjectId
         if (!mongoose.Types.ObjectId.isValid(userId)) {

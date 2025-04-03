@@ -3,7 +3,7 @@ const router = express.Router();
 const profileController = require('../controller/profile_controller');
 
 // Route for creating a profile
-router.post('/create', profileController.createProfile);
+router.post('/:userId', profileController.createProfile);
 
 // Route for fetching profile by userId
 router.get('/:userId', profileController.getProfile);
