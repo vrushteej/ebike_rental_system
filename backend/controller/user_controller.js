@@ -22,9 +22,20 @@ exports.login = async (req, res, next) => {
 
 exports.updateUserDetails = async (req, res, next) => {
     try {
-        const { userId, email, password } = req.body;
+        const { userId } = req.params; 
+        const {email, phone, password } = req.body;
         const updatedUser = await userService.updateUserDetails(userId, email, password);
         res.json({ status: true, message: 'User details updated successfully', updatedUser });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getUserById = async (req,res,next) => {
+    try {
+        const { userId} = req.params;
+        const user = await userService.getUserById(userId);
+        res.json({ status: true, user});
     } catch (error) {
         next(error);
     }

@@ -41,11 +41,12 @@ class userService {
         }
     }
 
-    static async updateUserDetails(userId, email, password) {
+    static async updateUserDetails(userId, email, phone, password) {
         try {
             const updateData = {};
 
             if (email) updateData.email = email;
+            if (phone) updateData.phone = phone;
             if (password) {
                 const salt = await bcrypt.genSalt(10);
                 updateData.password = await bcrypt.hash(password, salt);
