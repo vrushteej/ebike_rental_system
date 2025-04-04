@@ -11,6 +11,14 @@ const userSchema = new Schema({
         default: uuidv4,
         unique: true
     },
+    first_name: {
+        type: String,
+        required: true
+    },
+    last_name: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         lowercase: true,
@@ -20,6 +28,7 @@ const userSchema = new Schema({
     phone: {
         type: String,
         required: true
+        unique: true
     },
     password: {
         type: String,
@@ -32,24 +41,20 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
     try {
-        if (this.password) {
-            const salt = await bcrypt.genSalt(10);
-            this.password = await bcrypt.hash(this.password, salt);
-        }
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (error) {
         next(error);
     }
 });
 
+// Compare hashed password
 userSchema.methods.comparePassword = async function (userPassword) {
-    try {
-        return await bcrypt.compare(userPassword, this.password);
-    } catch (error) {
-        throw error;
-    }
+    return bcrypt.compare(userPassword, this.password);
 };
 
-const userModel = db.model('user', userSchema);
+const userModel = db.model('User', userSchema);
 module.exports = userModel;
