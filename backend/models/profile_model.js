@@ -5,9 +5,8 @@ const { Schema } = mongoose;
 
 const profileSchema = new Schema({
     userId: {
-        type: String,  // This will reference the userId from the user model
+        type: mongoose.Schema.Types.ObjectId,  // This will reference the userId from the user model
         ref: userModel.modelName,
-        required: true
     },
     firstName: {
         type: String,
@@ -41,6 +40,6 @@ const profileSchema = new Schema({
     }
 });
 
-const profileModel = db.model('Profile', profileSchema);
+const profileModel = db.model('profiles', profileSchema);
 
 module.exports = profileModel;

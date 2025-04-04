@@ -1,17 +1,16 @@
 const userModel = require('../models/user_model');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 
 class userService {
-    static async registerUser(first_name, last_name, email, phone, password) {
+    static async registerUser(email, phone, password) {
         try {
             // Check if user already exists
             const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
-    
             if (existingUser) {
                 throw new Error("User with this email or phone already exists.");
             }
-    
+
             // Create new user
             const newUser = new userModel({ email, phone, password });
             await newUser.save();
@@ -21,7 +20,7 @@ class userService {
             throw err;
         }
     }
-    
+
     static async loginUser(email, phone, password) {
         try {
             // Find user by email or phone
@@ -42,26 +41,26 @@ class userService {
         }
     }
 
-    static async updateUserDetails(userId, email, password) {
+    static async updateUserDetails(userId, email, phone, password) {
         try {
             const updateData = {};
 
             if (email) updateData.email = email;
+            if (phone) updateData.phone = phone;
             if (password) {
                 const salt = await bcrypt.genSalt(10);
                 updateData.password = await bcrypt.hash(password, salt);
             }
-    
+
             const updatedUser = await userModel.findByIdAndUpdate(userId, updateData, { new: true });
             if (!updatedUser) throw new Error('User not found');
 
             return updatedUser;
-
         } catch (error) {
             throw error;
         }
     }
-    
+
     static async getUserById(userId) {
         try {
             const user = await userModel.findById(userId); // This will return all fields, including the hashed password
@@ -70,5 +69,6 @@ class userService {
             throw error;
         }
     }
+}
 
 module.exports = userService;

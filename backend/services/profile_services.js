@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const profileModel = require('../models/profile_model');
 const userModel = require('../models/user_model');
 
@@ -5,49 +6,65 @@ class ProfileService {
     // Create a new profile for the user
     static async createProfile(userId, firstName, lastName, address, dob, gender) {
         try {
-            // Check if profile already exists for the user
+            // Ensure userId is a valid ObjectId
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                throw new Error('Invalid userId format');
+            }
+
+            // Check if profile already exists
             const existingProfile = await profileModel.findOne({ userId });
             if (existingProfile) {
                 throw new Error('Profile already exists for this user');
             }
 
-            // Create a new profile
+            // Create and save profile
             const profile = new profileModel({
-                userId,
+                userId, // No need to explicitly convert to ObjectId
                 firstName,
                 lastName,
                 address,
                 dob,
                 gender
             });
+
             await profile.save();
-            return { message: 'Profile created successfully' };
+            return { message: 'Profile created successfully', profile };
         } catch (error) {
-            throw error;
+            console.error('Error creating profile:', error.message);
+            throw new Error(error.message);
         }
     }
 
     // Get profile by userId
     static async getProfileByUserId(userId) {
         try {
-            const profile = await profileModel.findOne({ userId }).populate('userId', 'email phone');  // Populate email and phone from the user model
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                throw new Error('Invalid userId format');
+            }
+
+            const profile = await profileModel.findOne({ userId }).populate('userId', 'email phone');
             if (!profile) {
                 throw new Error('Profile not found');
             }
 
             return profile;
         } catch (error) {
-            throw error;
+            console.error('Error fetching profile:', error.message);
+            throw new Error(error.message);
         }
     }
 
     // Update user profile
     static async updateProfile(userId, firstName, lastName, address, dob, gender) {
         try {
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                throw new Error('Invalid userId format');
+            }
+
             const profile = await profileModel.findOneAndUpdate(
                 { userId },
                 { firstName, lastName, address, dob, gender },
-                { new: true } // Returns the updated document
+                { new: true } // Return updated profile
             );
 
             if (!profile) {
@@ -56,11 +73,10 @@ class ProfileService {
 
             return { message: 'Profile updated successfully', profile };
         } catch (error) {
-            throw error;
+            console.error('Error updating profile:', error.message);
+            throw new Error(error.message);
         }
     }
-
-    // Optionally, you can add more methods to handle profile deletion, etc.
 }
 
 module.exports = ProfileService;
