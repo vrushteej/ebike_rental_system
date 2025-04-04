@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:bike_sharing/home_screen.dart';
 import 'package:bike_sharing/signup_screen.dart';
 import 'package:bike_sharing/verfication_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Add this for TextInputFormatter
+import 'package:http/http.dart' as http;
 
 import 'auth_service.dart';
 import 'main.dart';
@@ -18,7 +21,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController pswdController = TextEditingController();
   bool isPhoneNumberValid = false; // Track validity of the phone number
+  bool _obscureText = true; // Track visibility of password
 
   void googleLogin() async {
     AuthService authService = AuthService();
@@ -38,9 +43,54 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  Future<void> loginUser() async {
+    final String phoneOrEmail = phoneController.text.trim();
+    final String password = pswdController.text.trim();
+
+    if (phoneOrEmail.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter both phone/email and password")),
+      );
+      return;
+    }
+
+    try {
+      var url = Uri.parse("http://192.168.0.128:3000/user/login"); // Replace with your backend URL
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"phoneOrEmail": phoneOrEmail, "password": password}),
+      );
+
+      var responseData = jsonDecode(response.body);
+      print("Response: ${response.statusCode}");
+
+      if (response.statusCode == 200 || response.statusCode == 201 || responseData["success"]) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Successful!")),
+        );
+
+        // Navigate to verification screen after successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => VerificationScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData["message"] ?? "Login failed")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
@@ -144,6 +194,35 @@ class _LoginScreenState extends State<LoginScreen> {
                               : const Icon(Icons.check_circle, color: Colors.grey),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: pswdController,
+                              obscureText: _obscureText, // Toggle password visibility
+                              style: const TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                hintText: 'Enter Password',
+                                hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
+                                border: InputBorder.none,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText; // Toggle password visibility
+                                    });
+                                  },
+                                ),
+                              ),
+                              keyboardType: TextInputType.visiblePassword,
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 6),
                       Divider(color: Colors.grey.shade300),
                       const SizedBox(height: 24),
@@ -169,11 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(content: Text("Please enter a valid 10-digit phone number")),
                             );
                           } else {
-                            // Proceed to verification screen
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => VerificationScreen()),
-                            );
+                            loginUser();
                           }
                         },
                         style: ElevatedButton.styleFrom(

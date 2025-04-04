@@ -1,13 +1,10 @@
 import 'package:bike_sharing/chat_screen.dart';
+import 'package:bike_sharing/plans_screen.dart';
 import 'package:bike_sharing/profile_page.dart';
 import 'package:flutter/material.dart';
 
 import 'main.dart';
 import 'map_screen.dart';
-
-void main() {
-  runApp(const MyApp());
-}
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({super.key});
@@ -33,53 +30,53 @@ class MyWalletScreenState extends State<MyWalletScreen> {
             ),
           ),
 
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.06,
-                vertical: MediaQuery.of(context).size.height * 0.03
-              ),
-    child: Scrollbar( // Added Scrollbar here
-    child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Back Buttont
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
+          Scrollbar(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.09,
+                  bottom: MediaQuery.of(context).size.height * 0.04,
+                  left: MediaQuery.of(context).size.width * 0.06,
+                  right: MediaQuery.of(context).size.width * 0.06,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                // Back Button
+                // IconButton(
+                //   icon: const Icon(Icons.arrow_back, color: Colors.black),
+                //   onPressed: () => Navigator.pop(context),
+                // ),
+
+                // Title
+                const Text(
+                  "My Wallet",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
+                ),
 
-                  // Title
-                  const Text(
-                    "My Wallet",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.032),
 
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.032),
+                // Wallet Card
+                WalletCard(),
 
-                  // Wallet Card
-                  WalletCard(),
+                const SizedBox(height: 20),
 
-                  const SizedBox(height: 20),
+                // Payment Methods
+                PaymentOption(title: "UPI"),
+                PaymentOption(title: "Cards"),
+                PaymentOption(title: "Netbanking"),
 
-                  // Payment Methods
-                  PaymentOption(title: "UPI"),
-                  PaymentOption(title: "Cards"),
-                  PaymentOption(title: "Netbanking"),
+                const SizedBox(height: 20),
 
-                  const SizedBox(height: 20),
-
-                  // Recent Transactions
-                  RecentTransactions(),
-                ],
+                // Recent Transactions
+                RecentTransactions(),
+              ],
+            ),
               ),
-              ),
-    ),
             ),
           ),
         ],
@@ -146,7 +143,7 @@ class WalletCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: MediaQuery.of(context).size.height * 0.05,
+        vertical: MediaQuery.of(context).size.height * 0.036,
         horizontal: MediaQuery.of(context).size.width * 0.05),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -186,7 +183,9 @@ class WalletCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlansScreen()));
+                },
                 child: const Text("+ Top Up"),
               ),
             ],
@@ -219,13 +218,19 @@ class WalletCard extends StatelessWidget {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Colors.green,
+                          foregroundColor: Color(0xFF2FEEB6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {},
-                        child: const Text("Purchase"),
+                        child: const Text(
+                          "Purchase",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -263,7 +268,7 @@ class PaymentOption extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.account_balance_wallet, color: Colors.green),
+              const Icon(Icons.account_balance_wallet, color: Color(0xFF2FEEB6)),
               const SizedBox(width: 10),
               Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
@@ -303,7 +308,7 @@ class RecentTransactions extends StatelessWidget {
           ),
           const Divider(),
           transactionItem("Weekly Pass", "-₹24.99", "Feb 9, 2025", Colors.red),
-          transactionItem("Top Up", "+₹50.00", "Feb 8, 2025", Colors.green),
+          transactionItem("Top Up", "+₹50.00", "Feb 8, 2025", Color(0xFF2FEEB6)),
         ],
       ),
     );

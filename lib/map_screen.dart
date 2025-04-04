@@ -43,11 +43,13 @@ class _MapScreenState extends State<MapScreen> {
 
     _location.onLocationChanged.listen((LocationData locationData) {
       if (!isManualSource && locationData.latitude != null && locationData.longitude != null) {
-        setState(() {
-          _currentlocation = LatLng(locationData.latitude!, locationData.longitude!);
-          isLoading = false;
-        });
-
+        if(mounted) {
+          setState(() {
+            _currentlocation =
+                LatLng(locationData.latitude!, locationData.longitude!);
+            isLoading = false;
+          });
+        }
         // Move the map to the updated location
         // _mapController.move(_currentlocation!, _currentZoom);
       }
@@ -69,11 +71,12 @@ class _MapScreenState extends State<MapScreen> {
         final sLon = double.parse(sData[0]['lon']);
         final dLat = double.parse(dData[0]['lat']);
         final dLon = double.parse(dData[0]['lon']);
-        setState(() {
-          _currentlocation = LatLng(sLat, sLon);
-          _destination = LatLng(dLat, dLon);
-        });
-
+        if(mounted) {
+          setState(() {
+            _currentlocation = LatLng(sLat, sLon);
+            _destination = LatLng(dLat, dLon);
+          });
+        }
         // Move the map to the updated location
         _mapController.move(_currentlocation!, _currentZoom);
         print("Source: $_currentlocation and Destination: $_destination");
@@ -118,14 +121,17 @@ class _MapScreenState extends State<MapScreen> {
 
   void _decodePolyline(String encodedPolyline) {
     PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> decodedpoints = polylinePoints.decodePolyline(encodedPolyline);
+    List<PointLatLng> decodedpoints = polylinePoints.decodePolyline(
+        encodedPolyline);
     print("Decoded points = $decodedpoints");
-    setState(() {
-      _route = decodedpoints.map((point) => LatLng(point.latitude, point.longitude)).toList();
-    });
-    print("Route = $_route");
+    if (mounted) {
+      setState(() {
+        _route = decodedpoints.map((point) =>
+            LatLng(point.latitude, point.longitude)).toList();
+      });
+      print("Route = $_route");
+    }
   }
-
   Future<bool> _checkRequestPermission() async {
     bool serviveEnabled = await _location.serviceEnabled();
     if (!serviveEnabled) {
@@ -311,11 +317,14 @@ class _MapScreenState extends State<MapScreen> {
 
                           // Convert coordinates to a human-readable address
                           String? address = await _reverseGeocode(_currentlocation!);
-                          if(address != null && address.isNotEmpty){
+                          if(address != null && address.isNotEmpty) {
                             print("Address = $address");
-                            setState(() {
-                              _sourceController.text = address; // Update 'Your location' text field
-                            });
+                            if (mounted) {
+                              setState(() {
+                                _sourceController.text =
+                                    address; // Update 'Your location' text field
+                              });
+                            }
                           }else {
                             print("Failed to retrieve address.");
                             setState(() {
@@ -442,9 +451,11 @@ class _MapScreenState extends State<MapScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          if(mounted) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          }
           // Navigate to different screens based on the selected index
           if (index == 1) {
             Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
