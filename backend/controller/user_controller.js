@@ -14,13 +14,13 @@ exports.register = async (req, res, next) => {
         }
 
         // Create a new user
-        const newUser = new User({
-            first_name,
-            last_name,
-            email,
-            phone,
-            password // Will be hashed in the `pre('save')` middleware
-        });
+//        const newUser = new User({
+//            first_name,
+//            last_name,
+//            email,
+//            phone,
+//            password // Will be hashed in the `pre('save')` middleware
+//        });
 
         const response = await userService.registerUser(first_name, last_name, email, phone, password);
         res.json({ status: true, message: response.message });
@@ -63,9 +63,9 @@ exports.login = async (req, res, next) => {
 
 exports.updateUserDetails = async (req, res, next) => {
     try {
-        const { userId, email, password } = req.body;
-        const { userId } = req.params;
-        const {email, phone, password } = req.body;
+        const { userId } = req.params; // userId from URL params
+        const { email, phone, password } = req.body; // email, phone, password from request body
+
         const updatedUser = await userService.updateUserDetails(userId, email, password);
         res.json({ status: true, message: 'User details updated successfully', updatedUser });
     } catch (error) {

@@ -8,16 +8,14 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     user_id: {
         type: String,
-        default: uuidv4,
+        default: () => uuidv4(),
         unique: true
     },
     first_name: {
         type: String,
-        required: true
     },
     last_name: {
         type: String,
-        required: true
     },
     email: {
         type: String,
@@ -27,7 +25,7 @@ const userSchema = new Schema({
     },
     phone: {
         type: String,
-        required: true
+        required: true,
         unique: true
     },
     password: {
