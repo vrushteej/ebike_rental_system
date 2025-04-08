@@ -1,4 +1,4 @@
-# bike_sharing
+# ebike_rental_system
 
 A new Flutter project.
 

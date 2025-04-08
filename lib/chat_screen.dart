@@ -1,6 +1,6 @@
-import 'package:bike_sharing/map_screen.dart';
-import 'package:bike_sharing/my_wallet_screen.dart';
-import 'package:bike_sharing/profile_page.dart';
+import 'package:ebike_rental_system/map_screen.dart';
+import 'package:ebike_rental_system/my_wallet_screen.dart';
+import 'package:ebike_rental_system/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'get_chatbot_response.dart';
 import 'main.dart'; // Import the chatbot response function

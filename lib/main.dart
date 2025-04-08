@@ -1,11 +1,15 @@
-import 'package:bike_sharing/map_screen.dart';
+import 'package:ebike_rental_system/map_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'landing_page.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
+  print('Before firebase initialization');
+  WidgetsFlutterBinding.ensureInitialized();
+  print('Before try-except block');
+  print('Initializing Firebase...');
+  await Firebase.initializeApp();  // Ensure Firebase is initialized before running the app
+  print('Firebase Initialized');
 
   runApp(MyApp());
 }
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: LandingPage(),
+      title: 'E-Bike Rental System',
       home: LandingPage(),
       theme: ThemeData(
         extensions: <ThemeExtension<dynamic>>[

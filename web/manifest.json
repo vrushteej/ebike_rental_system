@@ -1,6 +1,6 @@
 {
-    "name": "bike_sharing",
-    "short_name": "bike_sharing",
+    "name": "ebike_rental_system",
+    "short_name": "ebike_rental_system",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

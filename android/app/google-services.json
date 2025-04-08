@@ -29,6 +29,93 @@
             {
               "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bikeSharing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387858945348:android:d931897a9097338b743311",
+        "android_client_info": {
+          "package_name": "com.example.ebike_rental_system"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387858945348-gk6r3ne73t3g5oj77tts02qkmugm2e8u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ebike_rental_system",
+            "certificate_hash": "82314950f5248c0ad33da65bc6aa5850d4853bbe"
+          }
+        },
+        {
+          "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCt-zZ01JRgIcIkUdmUHInRKsJKe9iuBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bikeSharing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387858945348:android:c37ea8edbb7b3574743311",
+        "android_client_info": {
+          "package_name": "com.example.maps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCt-zZ01JRgIcIkUdmUHInRKsJKe9iuBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387858945348-8hkhq1rnuf3qbousfnsmtoqmrcpmtefh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bikeSharing"
+              }
             }
           ]
         }

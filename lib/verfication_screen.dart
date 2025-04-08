@@ -1,6 +1,6 @@
-import 'package:bike_sharing/home_screen.dart';
-import 'package:bike_sharing/map_screen.dart';
-import 'package:bike_sharing/otp_field.dart';
+import 'package:ebike_rental_system/home_screen.dart';
+import 'package:ebike_rental_system/map_screen.dart';
+import 'package:ebike_rental_system/otp_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'auth_service.dart';

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:bike_sharing/chat_screen.dart';
-import 'package:bike_sharing/my_wallet_screen.dart';
-import 'package:bike_sharing/profile_page.dart';
+import 'package:ebike_rental_system/chat_screen.dart';
+import 'package:ebike_rental_system/my_wallet_screen.dart';
+import 'package:ebike_rental_system/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';

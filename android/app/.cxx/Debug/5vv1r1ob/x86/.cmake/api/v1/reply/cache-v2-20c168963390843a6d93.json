@@ -151,7 +151,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Vrushtee Jasani/VRJ/Internship/ebike_sharing/android/app/.cxx/Debug/5vv1r1ob/x86"
+			"value" : "c:/Users/Vrushtee Jasani/VRJ/Internship/eebike_rental_system/android/app/.cxx/Debug/5vv1r1ob/x86"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -751,7 +751,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\Vrushtee Jasani\\VRJ\\Internship\\ebike_sharing\\build\\app\\intermediates\\cxx\\Debug\\5vv1r1ob\\obj\\x86"
+			"value" : "C:\\Users\\Vrushtee Jasani\\VRJ\\Internship\\eebike_rental_system\\build\\app\\intermediates\\cxx\\Debug\\5vv1r1ob\\obj\\x86"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -1023,7 +1023,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\Vrushtee Jasani\\VRJ\\Internship\\ebike_sharing\\build\\app\\intermediates\\cxx\\Debug\\5vv1r1ob\\obj\\x86"
+			"value" : "C:\\Users\\Vrushtee Jasani\\VRJ\\Internship\\eebike_rental_system\\build\\app\\intermediates\\cxx\\Debug\\5vv1r1ob\\obj\\x86"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1331,7 +1331,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Vrushtee Jasani/VRJ/Internship/ebike_sharing/android/app/.cxx/Debug/5vv1r1ob/x86"
+			"value" : "C:/Users/Vrushtee Jasani/VRJ/Internship/eebike_rental_system/android/app/.cxx/Debug/5vv1r1ob/x86"
 		},
 		{
 			"name" : "Project_IS_TOP_LEVEL",

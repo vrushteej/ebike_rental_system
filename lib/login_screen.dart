@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:bike_sharing/home_screen.dart';
-import 'package:bike_sharing/signup_screen.dart';
-import 'package:bike_sharing/verfication_screen.dart';
+import 'package:ebike_rental_system/home_screen.dart';
+import 'package:ebike_rental_system/signup_screen.dart';
+import 'package:ebike_rental_system/verfication_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Add this for TextInputFormatter
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: const TextStyle(fontSize: 18),
                               decoration: const InputDecoration(
                                 hintText: '12345 67890',
-                                hintStyle: TextStyle(fontSize: 18, color: Colors.black),
+                                // hintStyle: TextStyle(fontSize: 18, color: Colors.black),
                                 border: InputBorder.none,
                               ),
                               keyboardType: TextInputType.phone,
@@ -204,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: const TextStyle(fontSize: 18),
                               decoration: InputDecoration(
                                 hintText: 'Enter Password',
-                                hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
+                                // hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
                                 border: InputBorder.none,
                                 suffixIcon: IconButton(
                                   icon: Icon(

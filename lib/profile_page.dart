@@ -1,7 +1,7 @@
-import 'package:bike_sharing/chat_screen.dart';
-import 'package:bike_sharing/login_screen.dart';
-import 'package:bike_sharing/map_screen.dart';
-import 'package:bike_sharing/my_wallet_screen.dart';
+import 'package:ebike_rental_system/chat_screen.dart';
+import 'package:ebike_rental_system/login_screen.dart';
+import 'package:ebike_rental_system/map_screen.dart';
+import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'main.dart';

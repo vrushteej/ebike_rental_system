@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bike_sharing/verfication_screen.dart';
+import 'package:ebike_rental_system/verfication_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_screen.dart';
@@ -277,7 +277,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           style: const TextStyle(fontSize: 18),
                           decoration: InputDecoration(
                             hintText: 'Enter Password',
-                            hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
+                            // hintStyle: const TextStyle(fontSize: 18, color: Colors.black),
                             border: InputBorder.none,
                             suffixIcon: IconButton(
                               icon: Icon(
