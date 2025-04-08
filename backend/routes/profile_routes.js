@@ -11,4 +11,7 @@ router.get('/:userId', profileController.getProfile);
 // Route for updating profile by userId
 router.put('/:userId', profileController.updateProfile);
 
+// Route for deleting profile by userId
+router.delete('/:userId', profileController.deletedProfile);
+
 module.exports = router;

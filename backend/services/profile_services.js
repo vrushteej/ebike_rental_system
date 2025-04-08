@@ -77,6 +77,23 @@ class ProfileService {
             throw new Error(error.message);
         }
     }
+
+    static async deleteProfile(userId) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                throw new Error('Invalid userId format');
+            }
+    
+            const profile = await profileModel.findOneAndDelete({ userId });
+            if (!profile) {
+                throw new Error('Profile not found');
+            }
+    
+            return { message: 'Profile deleted successfully', profile };
+        } catch (error) {
+            throw error;
+        }
+    }    
 }
 
 module.exports = ProfileService;

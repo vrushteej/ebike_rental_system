@@ -50,3 +50,17 @@ exports.updateProfile = async (req, res, next) => {
         next(error);  // Pass the error to the error-handling middleware
     }
 };
+
+exports.deletedProfile = async(req,res,next) => {
+    try {
+        const { userId } = req.params;
+        const response = await ProfileService.deleteProfile(userId);
+        res.status(200).json({
+            status: true,
+            message:'Profile deleted successfully',
+            response
+        });
+    } catch (error) {
+        next(error)
+    }
+}

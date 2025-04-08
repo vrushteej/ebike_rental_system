@@ -33,7 +33,7 @@ exports.updateUserDetails = async (req, res, next) => {
 
 exports.getUserById = async (req,res,next) => {
     try {
-        const { userId} = req.params;
+        const { userId } = req.params;
         const user = await userService.getUserById(userId);
         res.json({ status: true, user});
     } catch (error) {
