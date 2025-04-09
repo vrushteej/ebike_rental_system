@@ -21,6 +21,8 @@ app.use('/profile',profileRouter);
 app.use('/station', stationRouter);
 app.use('/ride',rideRoute);
 app.use('/payment',razorpayRoute);
+app.use('/profile', profileRouter);
+app.use('/station', stationRouter);
 
 
 app.get('/', (req, res) => {
