@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const db=require('../config/db');
 const userModel=require('./user_model');
 
-const { Schema }=mongoose;
+const { Schema } = mongoose;
 
 const rideSchema = new Schema({
     userId: {
@@ -12,10 +12,44 @@ const rideSchema = new Schema({
     },
     amount: {
         type: Number,
-        required: true
-    }
-   
+    },
+    start_station: {
+        station_id: String,
+        name: String,
+        location: {
+          latitude: Number,
+          longitude: Number
+        }
+      },
     
+    end_station: {
+        station_id: String,
+        name: String,
+        location: {
+          latitude: Number,
+          longitude: Number
+        }
+    },
+    
+    start_time: { 
+        type: Date, 
+        default: Date.now 
+    },
+    end_time : {
+        type: Date,
+        default: Date.now
+    },
+    duration_minutes: {
+        type:Number
+    },
+    distance_km:{
+        type: Number
+    },
+    status: {
+        type: String,
+        enum: ['ongoing', 'completed'],
+        default: 'ongoing'
+    }
 });
 
 const Ride = db.model("Ride", rideSchema);

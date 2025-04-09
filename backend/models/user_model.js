@@ -1,22 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const db = require('../config/db');
-const { v4: uuidv4 } = require('uuid');
 
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    user_id: {
-        type: String,
-        default: () => uuidv4(),
-        unique: true
-    },
-    first_name: {
-        type: String,
-    },
-    last_name: {
-        type: String,
-    },
     email: {
         type: String,
         lowercase: true,
@@ -30,7 +18,8 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        // minlength: 6,
     },
     created_at: {
         type: Date,
@@ -38,6 +27,7 @@ const userSchema = new Schema({
     }
 });
 
+// Hash password before saving
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {

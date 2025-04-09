@@ -3,8 +3,9 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routes/user_routes');
 const profileRouter = require('./routes/profile_routes')
 const stationRouter = require('./routes/station_routes');
-const rideRoute=require('./routes/ride_routes');
-const razorpayRoute=require('./routes/razorpay_routes');
+const rideRoute = require('./routes/ride_routes');
+const razorpayRoute = require('./routes/razorpay_routes');
+const bikeRouter = require('./routes/bike_routes');
 const dotenv = require('dotenv');
 
 
@@ -21,8 +22,7 @@ app.use('/profile',profileRouter);
 app.use('/station', stationRouter);
 app.use('/ride',rideRoute);
 app.use('/payment',razorpayRoute);
-app.use('/profile', profileRouter);
-app.use('/station', stationRouter);
+app.use('/bike',bikeRouter);
 
 
 app.get('/', (req, res) => {
