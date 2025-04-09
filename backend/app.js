@@ -19,10 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/user', userRouter);
 app.use('/profile',profileRouter);
-app.use('/station', stationRouter);
 app.use('/ride',rideRoute);
 app.use('/payment',razorpayRoute);
-app.use('/bike',bikeRouter);
+app.use('/station', stationRouter);
+app.use('/bike', bikeRouter);
 
 
 app.get('/', (req, res) => {
