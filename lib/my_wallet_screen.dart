@@ -7,7 +7,8 @@ import 'main.dart';
 import 'map_screen.dart';
 
 class MyWalletScreen extends StatefulWidget {
-  const MyWalletScreen({super.key});
+  final String userId; // User ID to identify the user
+  const MyWalletScreen({super.key, required this.userId});
 
   @override
   State<MyWalletScreen> createState() => MyWalletScreenState();
@@ -89,11 +90,11 @@ class MyWalletScreenState extends State<MyWalletScreen> {
           });
           // Navigate to different screens based on the selected index
           if (index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId,)));
           } else if (index == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(userId: widget.userId)));
           } else if (index == 3) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.userId)));
           }
         },
         type: BottomNavigationBarType.fixed,

@@ -6,7 +6,6 @@ import 'landing_page.dart';
 void main() async {
   print('Before firebase initialization');
   WidgetsFlutterBinding.ensureInitialized();
-  print('Before try-except block');
   print('Initializing Firebase...');
   await Firebase.initializeApp();  // Ensure Firebase is initialized before running the app
   print('Firebase Initialized');

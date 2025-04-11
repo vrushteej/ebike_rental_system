@@ -6,7 +6,8 @@ import 'get_chatbot_response.dart';
 import 'main.dart'; // Import the chatbot response function
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String userId; // User ID to identify the user
+  const ChatScreen({super.key, required this.userId});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -183,11 +184,11 @@ class _ChatScreenState extends State<ChatScreen> {
           });
           // Navigate to different screens based on the selected index
           if (index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId,)));
           } else if (index == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen(userId: widget.userId,)));
           } else if (index == 3) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.userId,)));
           }
         },
         type: BottomNavigationBarType.fixed,

@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen>{
 
   // List of Screens for the Bottom Navigation
   final List<Widget> _screens = [
-    MapScreen(), // OpenStreetMapScreen will show when the home tab is selected
+    // MapScreen(), // OpenStreetMapScreen will show when the home tab is selected
     Center(child: Text("Chat Tab")),
     Center(child: Text("Money Tab")),
     Center(child: Text("Profile Tab")),
