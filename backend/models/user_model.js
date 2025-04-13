@@ -21,7 +21,42 @@ const userSchema = new Schema({
         required: true,
         // minlength: 6,
     },
-    created_at: {
+    firstName: {
+        type: String,
+        required: false,
+        trim: true,
+        default: null
+    },
+    lastName: {
+        type: String,
+        required: false,
+        trim: true,
+        default: null
+    },
+    address: 
+        {
+        street: { type: String, trim: false, default: null },
+        city: { type: String, trim: false, default: null },
+        state: { type: String, trim: false, default: null },
+        country: { type: String, trim: false, default: null },
+        zipCode: { type: String, trim: false, default: null }
+    },
+    dob: {
+        type: Date,
+        required: false,
+        default: null
+    },
+    gender: {
+        type: String,
+        enum: ["Male", "Female", "Other"],
+        required: false,
+        default: null,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
         type: Date,
         default: Date.now
     }
