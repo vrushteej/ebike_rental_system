@@ -101,14 +101,49 @@ class _SignupScreenState extends State<SignupScreen> {
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(userData),
         );
-
-        print("Response Status Code: ${response.statusCode}");
+        var responseData = jsonDecode(response.body);
+        print("Register Response: ${response.statusCode}");
+        String userId = responseData["userId"];
 
         if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+          String userId = responseData['user']['userId'];
+
+          // Create profile automatically
+          final String profileApiUrl = "http://192.168.0.128:3000/profile/$userId";
+          final Map<String, dynamic> profileData = {
+            "user_id": userId,
+            "firstName": responseData['user']['first_name'],
+            "lastName": responseData['user']['last_name'],
+            "address": {
+              "street": "",
+              "city": "",
+              "state": "",
+              "country": "",
+              "zipCode": "",
+            },
+            "dob": "",
+            "gender": "",
+          };
+
+          try {
+            final profileResponse = await http.post(
+              Uri.parse(profileApiUrl),
+              headers: {"Content-Type": "application/json"},
+              body: jsonEncode(profileData),
+            );
+
+            if (profileResponse.statusCode == 200 || profileResponse.statusCode == 201 || profileResponse.statusCode == 204) {
+              print("Profile created successfully!");
+            } else {
+              print("Failed to create profile: ${profileResponse.body}");
+            }
+          } catch (error) {
+            print("Error creating profile: $error");
+          }
+
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => VerificationScreen()));
+              MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId)));
         } else {
-          final responseData = jsonDecode(response.body);
           print('Response Body: $responseData');
           String errorMessage = responseData["message"] ?? "Signup failed";
           if (response.statusCode == 400) {

@@ -8,7 +8,8 @@ import 'login_screen.dart';
 import 'main.dart';
 
 class VerificationScreen extends StatefulWidget {
-  const VerificationScreen({super.key});
+  final String userId;
+  const VerificationScreen({super.key, required this.userId});
 
   @override
   State<StatefulWidget> createState() {
@@ -142,7 +143,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         onPressed: () {
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => MapScreen()),
+                            MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId)),
                                 (Route<dynamic> route) => false,
                           );
                         },

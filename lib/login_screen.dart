@@ -63,17 +63,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       var responseData = jsonDecode(response.body);
-      print("Response: ${response.statusCode}");
+      print("Login Response: ${response.statusCode}");
 
       if (response.statusCode == 200 || response.statusCode == 201 || responseData["success"]) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login Successful!")),
         );
 
+        String userId = responseData["user_id"];
+        print('User ID: $userId');
+
         // Navigate to verification screen after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => VerificationScreen()),
+          MaterialPageRoute(
+            builder: (context) => VerificationScreen(userId: userId), // Pass the userId
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
