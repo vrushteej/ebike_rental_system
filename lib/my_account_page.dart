@@ -6,7 +6,8 @@ import 'main.dart';
 
 class MyAccountPage extends StatefulWidget {
   final String userId;
-  const MyAccountPage({super.key, required this.userId});
+  final Map<String, dynamic>? userData;
+  const MyAccountPage({super.key, required this.userId, required this.userData});
 
   @override
   State<MyAccountPage> createState() => _MyAccountPageState();
@@ -14,14 +15,11 @@ class MyAccountPage extends StatefulWidget {
 
 class _MyAccountPageState extends State<MyAccountPage> {
   bool notificationsEnabled = false;
-  Map<String, dynamic>? profileData;
   Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    _fetchProfileData();
-    _fetchUserData();
   }
 
   // Fetch profile data from the backend
@@ -39,7 +37,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
       if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
         if(responseData['profile']!=null){
           setState(() {
-          profileData = responseData['profile'];
+          userData = responseData['profile'];
           });
         }
       } else {
@@ -97,11 +95,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      profileData == null
-          ? Center(child: CircularProgressIndicator()) // Show loading until data is fetched
-          :
-      Container(
+      body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
           gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
@@ -151,15 +145,18 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         vertical: MediaQuery.of(context).size.height * 0.02,
                         horizontal: MediaQuery.of(context).size.width * 0.05),
                     children: [
-                      buildMenuItem('Phone Number', userData?['phone']),
+                      buildMenuItem('Phone Number', userData?['phone'] ?? ''),
                       buildMenuItem('Address',
-                          '${profileData?['address']['street']}, '
-                          '${profileData?['address']['city']}, '
-                          '${profileData?['address']['state']}, '
-                          '${profileData?['address']['country']} - '
-                          '${profileData?['address']['zipCode']}'),
+                          '${userData?['address']?['street'] ?? ''}, '
+                              '${userData?['address']?['city'] ?? ''}, '
+                              '${userData?['address']?['state'] ?? ''}, '
+                              '${userData?['address']?['country'] ?? ''} - '
+                              '${userData?['address']?['zipCode'] ?? ''}'),
                       buildMenuItem('Language', 'English'),
-                      buildMenuItem('Age', calculateAge(DateTime.parse(profileData!['dob'])).toString()),
+                      buildMenuItem('Age',
+                          userData?['dob'] != null
+                              ? calculateAge(DateTime.parse(userData!['dob'])).toString()
+                              : ''),
                       buildMenuItem('Ride History', ''),
                       buildMenuItem('Notification', '')
                     ],

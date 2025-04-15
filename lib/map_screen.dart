@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:ebike_rental_system/api_service.dart';
 import 'package:ebike_rental_system/chat_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:ebike_rental_system/profile_page.dart';
@@ -30,7 +30,9 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _destination;
   List<LatLng> _route = [];
   double _currentZoom = 15.0;
-
+  List<dynamic> nearestStations = [];
+  bool showStations = false;
+  List<Marker> _markers = [];
   int _selectedIndex = 0;
 
   @override
@@ -55,6 +57,41 @@ class _MapScreenState extends State<MapScreen> {
         // _mapController.move(_currentlocation!, _currentZoom);
       }
     });
+  }
+
+  void _createMarkers() {
+    _markers.clear();
+    if (_currentlocation != null) {
+      // Add current location marker in blue
+      _markers.add(
+        Marker(
+          width: 40.0,
+          height: 40.0,
+          point: _currentlocation!,
+          child: Icon(
+            Icons.location_pin,
+            color: Colors.blue,  // Blue color for current location
+            size: 40.0,
+          ),
+        ),
+      );
+    }
+    // Add station markers
+    for (int i = 0; i < nearestStations.length; i++) {
+      var station = nearestStations[i];
+      _markers.add(
+        Marker(
+          width: 40.0,
+          height: 40.0,
+          point: LatLng(station['latitude'], station['longitude']),
+          child: Icon(
+            Icons.location_pin,
+            color: Colors.red,  // Red color for the station markers
+            size: 40.0,
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _fetchCoordinatesPoints(String source, String dest) async {
@@ -92,7 +129,6 @@ class _MapScreenState extends State<MapScreen> {
       }
     }
   }
-
 
   Future<void> _fetchRoute() async {
     if (_currentlocation == null){
@@ -133,6 +169,7 @@ class _MapScreenState extends State<MapScreen> {
       print("Route = $_route");
     }
   }
+
   Future<bool> _checkRequestPermission() async {
     bool serviveEnabled = await _location.serviceEnabled();
     if (!serviveEnabled) {
@@ -165,6 +202,31 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<void> _findNearestStations() async {
+    if (_currentlocation == null) {
+      errorMessage("Current location is not available.");
+      return;
+    }
+
+    try {
+      // Call the API service to fetch the nearest stations
+      final data = await ApiService().findNearestStations(
+        _currentlocation!.latitude,
+        _currentlocation!.longitude,
+      );
+
+      if (mounted) {
+        setState(() {
+          nearestStations = data; // List of nearest stations
+          showStations = true;
+          _createMarkers();
+        });
+      }
+    } catch (e) {
+      errorMessage("Failed to fetch nearest stations: $e");
+    }
+  }
+
   void _zoomIn() {
     _currentZoom = _currentZoom + 1;
     if (_currentZoom > 18) _currentZoom = 18;
@@ -182,6 +244,35 @@ class _MapScreenState extends State<MapScreen> {
       SnackBar(
         content: Text(message),
       ),
+    );
+  }
+
+  void _onStationClick(Map<String, dynamic> station) {
+    setState(() {
+      showStations = false; // Hide the stations list
+    });
+
+    // You can navigate to another screen or show additional information here
+    // For example, to show details in the same screen:
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(station['station_name']),
+          content: Text('Available Bikes: ${station['available_bikes']}'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                setState(() {
+                  showStations = true; // Show stations list again
+                });
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -277,7 +368,7 @@ class _MapScreenState extends State<MapScreen> {
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
-                            hintText: 'Your location',
+                            hintText: 'Your Current location',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(24),
                               borderSide: BorderSide(
@@ -346,109 +437,191 @@ class _MapScreenState extends State<MapScreen> {
                     ],
                   ),
                   SizedBox(height: MediaQuery.of(context).size.width * 0.04),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                        controller: _destinationController,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          hintText: 'Destination',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Color(0xFF2FEEB6), // Border color
-                              width: 1.5, // Set the border width
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Color(0xFF2FEEB6), // Ensure the border is green when not focused
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Color(0xFF2FEEB6), // Green when focused
-                              width: 1.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.01),
-                      IconButton(
-                        padding: EdgeInsets.all(6), // Remove padding to make the icon fit snugly within the border
-                        style: IconButton.styleFrom(backgroundColor: Colors.white),
-                        onPressed: () {
-                          final source = _sourceController.text.trim();
-                          final dest = _destinationController.text.trim();
-                          if (source.isNotEmpty && dest.isNotEmpty) {
-                            _fetchCoordinatesPoints(source, dest);
-                          }
-                          else{
-                            if (source.isEmpty) {
-                              errorMessage("Please enter your location.");
-                            } else {
-                              errorMessage("Please enter a destination.");
-                            }
-                          }
-                        },
-                        icon: Icon(
-                          Icons.search,
-                          size: 30, // Icon size to ensure it fits nicely
-                          color: Color(0xFF2FEEB6), // Icon color matching the border color
-                        ),
-                      ),
-                    ],
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: TextField(
+                  //       controller: _destinationController,
+                  //       decoration: InputDecoration(
+                  //         filled: true,
+                  //         fillColor: Colors.white,
+                  //         hintText: 'Destination',
+                  //         border: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(24),
+                  //           borderSide: BorderSide(
+                  //             color: Color(0xFF2FEEB6), // Border color
+                  //             width: 1.5, // Set the border width
+                  //           ),
+                  //         ),
+                  //         enabledBorder: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(24),
+                  //           borderSide: BorderSide(
+                  //             color: Color(0xFF2FEEB6), // Ensure the border is green when not focused
+                  //             width: 1.5,
+                  //           ),
+                  //         ),
+                  //         focusedBorder: OutlineInputBorder(
+                  //           borderRadius: BorderRadius.circular(24),
+                  //           borderSide: BorderSide(
+                  //             color: Color(0xFF2FEEB6), // Green when focused
+                  //             width: 1.5,
+                  //           ),
+                  //         ),
+                  //         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     SizedBox(width: MediaQuery.of(context).size.width * 0.01),
+                  //     IconButton(
+                  //       padding: EdgeInsets.all(6), // Remove padding to make the icon fit snugly within the border
+                  //       style: IconButton.styleFrom(backgroundColor: Colors.white),
+                  //       onPressed: () {
+                  //         final source = _sourceController.text.trim();
+                  //         final dest = _destinationController.text.trim();
+                  //         if (source.isNotEmpty && dest.isNotEmpty) {
+                  //           _fetchCoordinatesPoints(source, dest);
+                  //         }
+                  //         else{
+                  //           if (source.isEmpty) {
+                  //             errorMessage("Please enter your location.");
+                  //           } else {
+                  //             errorMessage("Please enter a destination.");
+                  //           }
+                  //         }
+                  //       },
+                  //       icon: Icon(
+                  //         Icons.search,
+                  //         size: 30, // Icon size to ensure it fits nicely
+                  //         color: Color(0xFF2FEEB6), // Icon color matching the border color
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  ElevatedButton(
+                    onPressed: _findNearestStations,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF2FEEB6),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 32),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0)
+                      )
+                    ),
+                    child: Text(
+                      "Find nearest stations",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: "Zoom in",
-            onPressed: _zoomIn,
-            backgroundColor: Color(0xFF2FEEB6),
-            mini: true,
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
+          Positioned(
+            top: showStations ?
+            MediaQuery.of(context).size.height*0.38 :
+            MediaQuery.of(context).size.height*0.72, // Adjust based on the state of showStations
+            right: 20,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  heroTag: "Zoom in",
+                  onPressed: _zoomIn,
+                  backgroundColor: Color(0xFF2FEEB6),
+                  mini: true,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  heroTag: "Zoom out",
+                  onPressed: _zoomOut,
+                  backgroundColor: Color(0xFF2FEEB6),
+                  mini: true,
+                  child: Icon(
+                    Icons.remove,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 10),
-          FloatingActionButton(
-            heroTag: "Zoom out",
-            onPressed: _zoomOut,
-            backgroundColor: Color(0xFF2FEEB6),
-            mini: true,
-            child: Icon(
-              Icons.remove,
-              color: Colors.white,
+          if (showStations)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  // Max height: up to 60% of the screen height
+                  maxHeight: MediaQuery.of(context).size.height * 0.36,
+                ),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFe0fff6),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                    ),
+                  ),
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.048,
+                    left: MediaQuery.of(context).size.width * 0.075,
+                    right: MediaQuery.of(context).size.width * 0.075,
+                    bottom: MediaQuery.of(context).size.width * 0.032,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Stations Near You",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height*0.018),
+                      ...nearestStations.map<Widget>((station) {
+                        return StationCard(
+                          stationName: station['station_name'],
+                          availableBikes: station['available_bikes'],
+                          onTap: () =>
+                              _onStationClick(station),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
-          // SizedBox(height: 10),
-          // FloatingActionButton(
-          //   heroTag: "Location",
-          //   onPressed: _userCurrentLocation,
-          //   backgroundColor: Color(0xFF2FEEB6),
-          //   child: Icon(
-          //     Icons.my_location,
-          //     size: 30,
-          //     color: Colors.white,
-          //   ),
-          // ),
         ],
       ),
+      // floatingActionButton: Column(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     FloatingActionButton(
+      //       heroTag: "Zoom in",
+      //       onPressed: _zoomIn,
+      //       backgroundColor: Color(0xFF2FEEB6),
+      //       mini: true,
+      //       child: Icon(
+      //         Icons.add,
+      //         color: Colors.white,
+      //       ),
+      //     ),
+      //     SizedBox(height: 10),
+      //     FloatingActionButton(
+      //       heroTag: "Zoom out",
+      //       onPressed: _zoomOut,
+      //       backgroundColor: Color(0xFF2FEEB6),
+      //       mini: true,
+      //       child: Icon(
+      //         Icons.remove,
+      //         color: Colors.white,
+      //       ),
+      //     ),
+      //   ],
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -501,6 +674,92 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       label: '',
+    );
+  }
+}
+
+class StationList extends StatelessWidget {
+  final List<dynamic> stations;
+  final Function(Map<String, dynamic>) onStationClick;
+
+  const StationList({super.key,
+    required this.stations,
+    required this.onStationClick,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: stations.length,
+      itemBuilder: (context, index) {
+        final station = stations[index];
+        return StationCard(
+          stationName: station['station_name'],
+          availableBikes: station['available_bikes'],
+          onTap: () => onStationClick(station), // Pass the station data on tap
+        );
+      },
+    );
+  }
+}
+
+class StationCard extends StatelessWidget {
+  final String stationName;
+  final int availableBikes;
+  final Function onTap;
+
+  const StationCard({
+    super.key,
+    required this.stationName,
+    required this.availableBikes,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: EdgeInsets.symmetric(vertical: 8),
+      color: Colors.white,
+      child: InkWell(
+        onTap: () => onTap(),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              Icon(Icons.directions_bike, color: Colors.green),
+              SizedBox(width: MediaQuery.of(context).size.width*0.05),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stationName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Available Bikes: $availableBikes',
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward, color: Colors.black),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

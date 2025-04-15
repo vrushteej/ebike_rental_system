@@ -1,15 +1,17 @@
+import 'dart:io';
+
 import 'package:ebike_rental_system/map_screen.dart';
+import 'package:ebike_rental_system/payment_confirmation_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'landing_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-  print('Before firebase initialization');
   WidgetsFlutterBinding.ensureInitialized();
-  print('Initializing Firebase...');
-  await Firebase.initializeApp();  // Ensure Firebase is initialized before running the app
+  await dotenv.load(fileName: 'assets/.env');
+  await Firebase.initializeApp();
   print('Firebase Initialized');
-
   runApp(MyApp());
 }
 
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Bike Rental System',
+      // home: MapScreen(userId: ''),
       home: LandingPage(),
       theme: ThemeData(
         extensions: <ThemeExtension<dynamic>>[

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ebike_rental_system/api_service.dart';
 import 'package:ebike_rental_system/home_screen.dart';
 import 'package:ebike_rental_system/signup_screen.dart';
 import 'package:ebike_rental_system/verfication_screen.dart';
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> loginUser() async {
+  Future<void> loginUser(BuildContext context) async {
     final String phoneOrEmail = phoneController.text.trim();
     final String password = pswdController.text.trim();
 
@@ -54,40 +55,29 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/user/login"); // Replace with your backend URL
-      var response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"phoneOrEmail": phoneOrEmail, "password": password}),
+    var result = await ApiService().loginUser(phoneOrEmail, phoneOrEmail, password);
+    print("Login Status: ${result['status']}");
+    if (result['status'] == 'success') {
+      String userId = result['userId'].toString();
+      print('User ID: $userId');
+
+      // Navigate to the verification screen after successful login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(userId: userId), // Pass the userId
+        ),
       );
 
-      var responseData = jsonDecode(response.body);
-      print("Login Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || responseData["success"]) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login Successful!")),
-        );
-
-        String userId = responseData["user_id"];
-        print('User ID: $userId');
-
-        // Navigate to verification screen after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerificationScreen(userId: userId), // Pass the userId
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Login failed")),
-        );
-      }
-    } catch (e) {
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
+        const SnackBar(content: Text("Login Successful!")),
+      );
+    } else {
+      // Show error message
+      String errorMessage = result['message'] ?? 'Login failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
       );
     }
   }
@@ -253,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(content: Text("Please enter a valid 10-digit phone number")),
                             );
                           } else {
-                            loginUser();
+                            loginUser(context);
                           }
                         },
                         style: ElevatedButton.styleFrom(

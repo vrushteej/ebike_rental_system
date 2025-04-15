@@ -40,7 +40,6 @@ class UserService {
             throw error;
         }
     }
-    
 
     //  Update email, phone, or password
     static async updateUserDetails(userId, email, phone, password,firstName,lastName,address,dob,gender) {
