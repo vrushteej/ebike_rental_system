@@ -59,13 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
     print("Login Status: ${result['status']}");
     if (result['status'] == 'success') {
       String userId = result['userId'].toString();
+      String token = result['token'].toString();
       print('User ID: $userId');
 
       // Navigate to the verification screen after successful login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => VerificationScreen(userId: userId), // Pass the userId
+          builder: (context) => VerificationScreen(userId: userId, token: token,), // Pass the userId
         ),
       );
 
@@ -76,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       // Show error message
       String errorMessage = result['message'] ?? 'Login failed';
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );

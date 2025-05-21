@@ -97,11 +97,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if (result['status'] == 'success') {
       String userId = result['userId'];
+      String token = result['token'];
       print("User ID: $userId");
       if (userId.isNotEmpty) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId)),
+          MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId, token: token)),
         );
       } else {
         print("User ID is missing in response.");

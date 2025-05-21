@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'login_screen.dart';
 import 'main.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class VerificationScreen extends StatefulWidget {
-  final String userId;
-  const VerificationScreen({super.key, required this.userId});
+  final String userId, token;
+  const VerificationScreen({super.key, required this.userId, required this.token});
 
   @override
   State<StatefulWidget> createState() {
@@ -18,10 +19,10 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-
   final List<TextEditingController> _controllers =
   List.generate(4, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+  final storage = FlutterSecureStorage();
 
   @override
   void dispose() {
@@ -140,7 +141,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     ),
                     const Spacer(),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          await storage.write(key: 'isLoggedIn', value: 'true');
+                          await storage.write(key: 'userId', value: widget.userId);
+                          await storage.write(key: 'authToken', value: widget.token);
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId)),

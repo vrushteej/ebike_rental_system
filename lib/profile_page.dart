@@ -5,6 +5,7 @@ import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ebike_rental_system/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'main.dart';
@@ -21,6 +22,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? userData;
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -55,7 +57,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     alignment: Alignment.topRight,
                     child: IconButton(
                       icon: const Icon(Icons.logout, color: Colors.black),
-                      onPressed: () {
+                      onPressed: () async {
+                        await _storage.deleteAll();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginScreen()),

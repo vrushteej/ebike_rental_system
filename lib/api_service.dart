@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "http://192.168.0.128:3000";
+  final String baseUrl = "http://10.10.122.107:3000";
 
   Future<Map<String, dynamic>> signUp(String email, String phone, String password) async {
     final String apiUrl = '$baseUrl/user/register';
@@ -32,6 +32,7 @@ class ApiService {
         // Success case
         result['status'] = 'success';
         result['userId'] = responseData['user']['_id'];
+        result['token'] = responseData['token'];
       } else {
         // Error case
         result['status'] = 'error';
@@ -80,6 +81,7 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201 || responseData["success"]) {
         result['status'] = 'success';
         result['userId'] = responseData['userId'];
+        result['token'] = responseData['token'];
       } else {
         result['status'] = 'error';
         result['message'] = responseData["message"] ?? "Login failed";

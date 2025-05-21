@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'editPhoneNumber.dart';
 import 'main.dart';
 
 class MyAccountPage extends StatefulWidget {
@@ -16,39 +17,25 @@ class MyAccountPage extends StatefulWidget {
 class _MyAccountPageState extends State<MyAccountPage> {
   bool notificationsEnabled = false;
   Map<String, dynamic>? userData;
+  String address = '';
 
   @override
   void initState() {
     super.initState();
-  }
-
-  // Fetch profile data from the backend
-  Future<void> _fetchProfileData() async {
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/profile/${widget.userId}"); // Replace with your backend URL
-      var response = await http.get(
-          url,
-          headers: {"Content-Type": "application/json"}
-      );
-
-      var responseData = jsonDecode(response.body);
-      print("Fetch Profile Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        if(responseData['profile']!=null){
-          setState(() {
-          userData = responseData['profile'];
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Failed to fetch data")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+    if (userData?['address']['street'] != null) {
+      address += '${userData?['address']?['street'] ?? ''}, ';
+    }
+    if (userData?['address']['city'] != null) {
+      address += '${userData?['address']?['city'] ?? ''}, ';
+    }
+    if (userData?['address']['state'] != null) {
+      address += '${userData?['address']?['state'] ?? ''}, ';
+    }
+    if (userData?['address']['country'] != null) {
+      address += '${userData?['address']?['country'] ?? ''} - ';
+    }
+    if (userData?['address']['zipCode'] != null) {
+      address += '${userData?['address']?['zipCode'] ?? ''}';
     }
   }
 
@@ -146,12 +133,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         horizontal: MediaQuery.of(context).size.width * 0.05),
                     children: [
                       buildMenuItem('Phone Number', userData?['phone'] ?? ''),
-                      buildMenuItem('Address',
-                          '${userData?['address']?['street'] ?? ''}, '
-                              '${userData?['address']?['city'] ?? ''}, '
-                              '${userData?['address']?['state'] ?? ''}, '
-                              '${userData?['address']?['country'] ?? ''} - '
-                              '${userData?['address']?['zipCode'] ?? ''}'),
+                      buildMenuItem('Address', address),
                       buildMenuItem('Language', 'English'),
                       buildMenuItem('Age',
                           userData?['dob'] != null
@@ -206,7 +188,19 @@ class _MyAccountPageState extends State<MyAccountPage> {
             Icons.arrow_forward_ios,
             size: 16,
           ),
-          onTap: () {},
+          onTap: () async {
+            // if (title == 'Phone Number') {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => EditPhoneNumberPage(
+            //           userId: widget.userId,
+            //           currentPhoneNumber: userData?['phone'] ?? '',
+            //         ),
+            //       ),
+            //     ).then((_) => _fetchUserData()); // Refresh on return
+            //   }
+          },
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height*0.006),
