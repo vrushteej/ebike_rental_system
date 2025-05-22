@@ -2,7 +2,9 @@ import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:ebike_rental_system/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'chat_socket_service.dart';
 import 'get_chatbot_response.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'main.dart'; // Import the chatbot response function
 
 class ChatScreen extends StatefulWidget {
@@ -16,8 +18,24 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = []; // Stores messages
+  late ChatSocketService _chatSocket;
 
   int _selectedIndex = 1;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _chatSocket = ChatSocketService();
+    _chatSocket.initSocket();
+
+    _chatSocket.socket.on('chat_to_flutter', (data) {
+      setState(() {
+        _messages.add({"sender": "bot", "message": data['response']});
+      });
+    });
+  }
+
 
   void _sendMessage() async {
     String message = _controller.text.trim();
@@ -31,15 +49,18 @@ class _ChatScreenState extends State<ChatScreen> {
     _controller.clear(); // Clear input field
 
     // Get chatbot response
-    String response = await getChatbotResponse(message);
+    // String response = await getChatbotResponse(message);
+    //
+    // // Add bot response after a short delay
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    //   setState(() {
+    //     _messages.add({"sender": "bot", "message": response});
+    //   });
+    // });
 
-    // Add bot response after a short delay
-    Future.delayed(const Duration(milliseconds: 500), () {
-      setState(() {
-        _messages.add({"sender": "bot", "message": response});
-      });
-    });
-  }
+
+      _chatSocket.sendMessage(message);
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -227,5 +248,10 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       label: '',
     );
+  }
+  @override
+  void dispose() {
+    _chatSocket.dispose();
+    super.dispose();
   }
 }

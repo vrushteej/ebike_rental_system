@@ -16,56 +16,25 @@ class MyAccountPage extends StatefulWidget {
 
 class _MyAccountPageState extends State<MyAccountPage> {
   bool notificationsEnabled = false;
-  Map<String, dynamic>? userData;
   String address = '';
 
   @override
   void initState() {
     super.initState();
-    if (userData?['address']['street'] != null) {
-      address += '${userData?['address']?['street'] ?? ''}, ';
+    if (widget.userData?['address']['street'] != null) {
+      address += '${widget.userData?['address']?['street'] ?? ''}, ';
     }
-    if (userData?['address']['city'] != null) {
-      address += '${userData?['address']?['city'] ?? ''}, ';
+    if (widget.userData?['address']['city'] != null) {
+      address += '${widget.userData?['address']?['city'] ?? ''}, ';
     }
-    if (userData?['address']['state'] != null) {
-      address += '${userData?['address']?['state'] ?? ''}, ';
+    if (widget.userData?['address']['state'] != null) {
+      address += '${widget.userData?['address']?['state'] ?? ''}, ';
     }
-    if (userData?['address']['country'] != null) {
-      address += '${userData?['address']?['country'] ?? ''} - ';
+    if (widget.userData?['address']['country'] != null) {
+      address += '${widget.userData?['address']?['country'] ?? ''} - ';
     }
-    if (userData?['address']['zipCode'] != null) {
-      address += '${userData?['address']?['zipCode'] ?? ''}';
-    }
-  }
-
-  // Fetch profile data from the backend
-  Future<void> _fetchUserData() async {
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/user/${widget.userId}"); // Replace with your backend URL
-      var response = await http.get(
-        url,
-        headers: {"Content-Type": "application/json"},
-      );
-
-      var responseData = jsonDecode(response.body);
-      print("Fetch User Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        if(responseData['user']!=null){
-          setState(() {
-            userData = responseData['user'];
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Failed to fetch data")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+    if (widget.userData?['address']['zipCode'] != null) {
+      address += '${widget.userData?['address']?['zipCode'] ?? ''}';
     }
   }
 
@@ -132,12 +101,12 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         vertical: MediaQuery.of(context).size.height * 0.02,
                         horizontal: MediaQuery.of(context).size.width * 0.05),
                     children: [
-                      buildMenuItem('Phone Number', userData?['phone'] ?? ''),
+                      buildMenuItem('Phone Number', widget.userData?['phone'] ?? ''),
                       buildMenuItem('Address', address),
                       buildMenuItem('Language', 'English'),
                       buildMenuItem('Age',
-                          userData?['dob'] != null
-                              ? calculateAge(DateTime.parse(userData!['dob'])).toString()
+                          widget.userData?['dob'] != null
+                              ? calculateAge(DateTime.parse(widget.userData!['dob'])).toString()
                               : ''),
                       buildMenuItem('Ride History', ''),
                       buildMenuItem('Notification', '')

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "http://10.10.122.107:3000";
+  final String baseUrl = "https://ccmap-backend.onrender.com";
 
   Future<Map<String, dynamic>> signUp(String email, String phone, String password) async {
     final String apiUrl = '$baseUrl/user/register';

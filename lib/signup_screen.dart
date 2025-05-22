@@ -97,9 +97,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if (result['status'] == 'success') {
       String userId = result['userId'];
-      String token = result['token'];
+      String? token = result['token'];
       print("User ID: $userId");
-      if (userId.isNotEmpty) {
+      if (userId.isNotEmpty && token != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId, token: token)),
@@ -189,34 +189,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     child: Column(
                       children: [
-                        // First Name Field
-                        // TextFormField(
-                        //   controller: firstNameController,
-                        //   validator: validateFirstName,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'First Name',
-                        //     border: InputBorder.none,
-                        //     errorText: firstNameError,
-                        //   ),
-                        //   keyboardType: TextInputType.name,
-                        // ),
-                        // Divider(color: Colors.grey),
-                        // SizedBox(height: 16),
-                        //
-                        // // Last Name Field
-                        // TextFormField(
-                        //   controller: lastNameController,
-                        //   validator: validateLastName,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Last Name',
-                        //     border: InputBorder.none,
-                        //     errorText: lastNameError,
-                        //   ),
-                        //   keyboardType: TextInputType.name,
-                        // ),
-                        // Divider(color: Colors.grey),
-                        // SizedBox(height: 16),
-
                         // Email Field
                         TextFormField(
                           controller: emailController,

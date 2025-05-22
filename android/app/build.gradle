@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation platform("com.google.firebase:firebase-bom:32.2.0")
+    implementation platform("com.google.firebase:firebase-bom:33.13.0")
     implementation "com.google.firebase:firebase-analytics-ktx"
     implementation "com.google.android.gms:play-services-location:21.0.1"
     implementation "com.google.android.gms:play-services-maps:18.1.0"
@@ -44,10 +44,24 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
+
+            // ProGuard/R8 minification
+            shrinkResources false
+            minifyEnabled false // disable R8
+
+            // Specify the ProGuard rules file
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'org.jetbrains.kotlin:kotlin-stdlib:2.1.0'
+        force 'org.jetbrains.kotlin:kotlin-reflect:2.1.0'
+    }
 }
