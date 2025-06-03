@@ -6,7 +6,7 @@ const rideRoute = require('./routes/ride_routes');
 const razorpayRoute = require('./routes/razorpay_routes');
 const bikeRouter = require('./routes/bike_routes');
 const dotenv = require('dotenv');
-
+const { errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
 
@@ -26,5 +26,7 @@ app.use('/bike', bikeRouter);
 app.get('/', (req, res) => {
     res.send("Hello, Welcome to the E-bike Rental System!");
 });
+
+app.use(errorHandler);
 
 module.exports = app;

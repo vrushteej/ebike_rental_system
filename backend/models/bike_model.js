@@ -74,33 +74,3 @@ module.exports = bikeModel;
 
 
 
-// const mongoose = require('mongoose');
-
-// const bikeSchema = new mongoose.Schema({
-//   bikeId: {
-//     type: String,
-//     required: true,
-//     unique: true
-//   },
-//   qrCodeStatus: {
-//     type: String,
-//     enum: ['locked', 'unlocked'],
-//     default: 'locked'
-//   },
-//   isInDock: {
-//     type: Boolean,
-//     default: true
-//   },
-//   stationId: {
-//     type: String,
-//     default: null
-//   }
-// });
-
-// // 💡 Pre-save hook to clear stationId if bike is not docked
-
-
-// // Also applies to update operations if needed
-
-
-// module.exports = mongoose.model('Bike', bikeSchema);

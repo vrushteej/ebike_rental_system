@@ -1,5 +1,6 @@
 const Ride = require('../models/ride_model');
 const Station = require('../models/station_model');
+const RideTracking = require('../models/ride_tracking_model');
 
 class RideServices {
   // Start a ride
@@ -109,6 +110,29 @@ class RideServices {
   static async getRide(userId) {
     return await Ride.find({ userId }).populate('userId');
   }
+
+  static async addTrackingPoint({ rideId, latitude, longitude, accuracy }) {
+  const point = {
+    latitude,
+    longitude,
+    accuracy,
+    timestamp: new Date()
+  }
+  const existing = await RideTracking.findOne({ rideId });
+
+  if (existing) {
+    existing.trackingData.push(point);
+    await existing.save();
+  } else {
+    await RideTracking.create({
+      rideId,
+      trackingData: [point],
+    });
+  }
+
+  return point;
+}
+  
 }
 
 module.exports = RideServices;

@@ -1,7 +1,8 @@
 const bikeModel = require('../models/bike_model');
+const QRCode = require('qrcode');
 
 class bikeService {
-    // 1. Create a bike
+    //  Create a bike
     static async createBike(data) {
         try {
             const {
@@ -36,7 +37,7 @@ class bikeService {
         }
     }
 
-    // 2. Get all bikes
+    //  Get all bikes
     static async getAllBikes() {
         try {
             const bikes = await bikeModel.find().populate('station_id');
@@ -91,6 +92,35 @@ class bikeService {
             throw error;
         }
     }
+
+    static async generateBikeQR(bikeId) {
+        try {
+            const bike = await bikeModel.findById(bikeId).populate('station_id');
+            if (!bike) throw new Error('Bike not found');
+
+            const qrData = {
+                id: bike._id,
+                status: bike.status,
+                isInDock: bike.isInDock,
+                battery_level: bike.battery_level,
+                station: bike.station_id ? {
+                    id: bike.station_id._id,
+                    name: bike.station_id.name || 'Unknown'
+                } : null,
+                last_service_date: bike.last_service_date,
+                latitude: bike.latitude,
+                longitude: bike.longitude
+            };
+
+            const qrString = JSON.stringify(qrData);
+            const qrImage = await QRCode.toDataURL(qrString); // base64 image
+
+            return qrImage;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
+
 
 module.exports = bikeService;

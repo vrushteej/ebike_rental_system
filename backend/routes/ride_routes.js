@@ -13,4 +13,6 @@ router.post('/end', rideController.endRide);
 // Get all rides of a user
 router.get('/user/:userId', rideController.getUserRides);
 
+router.post('/track', rideController.trackRide);
+
 module.exports = router;

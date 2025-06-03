@@ -1,6 +1,6 @@
 const rideService = require('../services/ride_service');
 
-// 🟢 Start Ride
+//  Start Ride
 exports.startRide = async (req, res, next) => {
   try {
     const { userId, bikeId, latitude, longitude } = req.body;
@@ -22,7 +22,7 @@ exports.startRide = async (req, res, next) => {
   }
 };
 
-// 🔴 End Ride with distance & amount
+//  End Ride with distance & amount
 exports.endRide = async (req, res, next) => {
     try {
       const { rideId, latitude, longitude, amount } = req.body;
@@ -64,7 +64,7 @@ exports.endRide = async (req, res, next) => {
   };
   
 
-// 🧾 Get All Rides for a User
+//  Get All Rides for a User
 exports.getUserRides = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -78,3 +78,22 @@ exports.getUserRides = async (req, res, next) => {
     next(error);
   }
 };
+
+// Optional: Track via REST (for testing or fallback)
+exports.trackRide = async (req, res, next) => {
+  try {
+    const { rideId, latitude, longitude, accuracy } = req.body;
+
+    const result = await rideService.addTrackingPoint({ rideId, latitude, longitude, accuracy });
+
+    res.status(200).json({
+      status: true,
+      message: 'Tracking point added',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

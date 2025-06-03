@@ -1,20 +1,11 @@
-const bikeService = require('../services/bike_services');
 const mongoose = require('mongoose');
+const bikeService = require('../services/bike_services');
+const bikeModel = require('../models/bike_model');
+const { generateBikeQR, verifyBikeQR } = require('../services/qr_services');
 
-// exports.createBike = async (req, res, next) => {
-//     try {
-//         const { status, isInDock, station_id, battery_level, latitude, longitude } = req.body;
-
-//         const bike = await bikeService.createBike(status, isInDock, station_id, battery_level, latitude, longitude);
-//         res.status(201).json({ status: true, message: 'Bike created successfully', bike });
-//     } catch (error) {
-//         next(error);
-//     }
-// };
-
+// Create a new bike
 exports.createBike = async (req, res, next) => {
     try {
-        // Pass the entire req.body as a single object instead of separate parameters
         const bike = await bikeService.createBike(req.body);
         res.status(201).json({ status: true, message: 'Bike created successfully', bike });
     } catch (error) {
@@ -22,6 +13,7 @@ exports.createBike = async (req, res, next) => {
     }
 };
 
+//  Get all bikes
 exports.getAllBikes = async (req, res, next) => {
     try {
         const bikes = await bikeService.getAllBikes();
@@ -31,6 +23,7 @@ exports.getAllBikes = async (req, res, next) => {
     }
 };
 
+//  Get a specific bike by ID
 exports.getBikeById = async (req, res, next) => {
     try {
         const { bikeId } = req.params;
@@ -46,12 +39,10 @@ exports.getBikeById = async (req, res, next) => {
     }
 };
 
+// Update a bike
 exports.updateBike = async (req, res, next) => {
     try {
         const { bikeId } = req.params;
-        const { status, isInDock, station_id, battery_level, latitude, longitude } = req.body;
-
-        // Similar issue here - you're not passing req.body to the service
         const updatedBike = await bikeService.updateBike(bikeId, req.body);
         res.status(200).json({ status: true, message: 'Bike updated successfully', bike: updatedBike });
     } catch (error) {
@@ -59,6 +50,7 @@ exports.updateBike = async (req, res, next) => {
     }
 };
 
+//  Delete a bike
 exports.deleteBike = async (req, res, next) => {
     try {
         const { bikeId } = req.params;
@@ -71,5 +63,38 @@ exports.deleteBike = async (req, res, next) => {
         res.status(200).json({ status: true, message: 'Bike deleted successfully' });
     } catch (error) {
         next(error);
+    }
+};
+
+// Generate QR code for a bike
+exports.getBikeQR = async (req, res, next) => {
+    try {
+        const { bikeId } = req.params;
+        const qrImage = await generateBikeQR(bikeId);
+        res.status(200).json({ status: true, qrcode: qrImage });
+    } catch (error) {
+        next(error);
+    }
+};
+
+//  Verify scanned QR code
+exports.verifyScannedQR = async (req, res, next) => {
+    try {
+        const { qrString } = req.body;
+
+        if (!qrString) {
+            return res.status(400).json({ status: false, message: 'QR string is required' });
+        }
+
+        const payload = verifyBikeQR(qrString); // returns decoded + verified payload
+        const bike = await bikeModel.findById(payload.id);
+
+        if (!bike) {
+            return res.status(404).json({ status: false, message: 'Bike not found' });
+        }
+
+        res.status(200).json({ status: true, bike, message: 'QR code verified' });
+    } catch (error) {
+        return res.status(400).json({ status: false, message: 'Invalid or expired QR code', error: error.message });
     }
 };

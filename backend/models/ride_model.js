@@ -49,7 +49,17 @@ const rideSchema = new Schema({
         type: String,
         enum: ['ongoing', 'completed'],
         default: 'ongoing'
-    }
+    },
+    tracking_path:[
+    {
+        latitude: Number,
+        longitude: Number,
+        accuracy: Number,
+        timestamp: {
+            type: Date,
+            default:Date.now
+        }
+    }]
 });
 
 const Ride = db.model("Ride", rideSchema);
