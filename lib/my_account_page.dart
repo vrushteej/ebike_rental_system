@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'editPhoneNumber.dart';
 import 'main.dart';
 
 class MyAccountPage extends StatefulWidget {
   final String userId;
-  const MyAccountPage({super.key, required this.userId});
+  final Map<String, dynamic>? userData;
+  const MyAccountPage({super.key, required this.userId, required this.userData});
 
   @override
   State<MyAccountPage> createState() => _MyAccountPageState();
@@ -14,73 +16,25 @@ class MyAccountPage extends StatefulWidget {
 
 class _MyAccountPageState extends State<MyAccountPage> {
   bool notificationsEnabled = false;
-  Map<String, dynamic>? profileData;
-  Map<String, dynamic>? userData;
+  String address = '';
 
   @override
   void initState() {
     super.initState();
-    _fetchProfileData();
-    _fetchUserData();
-  }
-
-  // Fetch profile data from the backend
-  Future<void> _fetchProfileData() async {
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/profile/${widget.userId}"); // Replace with your backend URL
-      var response = await http.get(
-          url,
-          headers: {"Content-Type": "application/json"}
-      );
-
-      var responseData = jsonDecode(response.body);
-      print("Fetch Profile Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        if(responseData['profile']!=null){
-          setState(() {
-          profileData = responseData['profile'];
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Failed to fetch data")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+    if (widget.userData?['address']['street'] != null) {
+      address += '${widget.userData?['address']?['street'] ?? ''}, ';
     }
-  }
-
-  // Fetch profile data from the backend
-  Future<void> _fetchUserData() async {
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/user/${widget.userId}"); // Replace with your backend URL
-      var response = await http.get(
-        url,
-        headers: {"Content-Type": "application/json"},
-      );
-
-      var responseData = jsonDecode(response.body);
-      print("Fetch User Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        if(responseData['user']!=null){
-          setState(() {
-            userData = responseData['user'];
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Failed to fetch data")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+    if (widget.userData?['address']['city'] != null) {
+      address += '${widget.userData?['address']?['city'] ?? ''}, ';
+    }
+    if (widget.userData?['address']['state'] != null) {
+      address += '${widget.userData?['address']?['state'] ?? ''}, ';
+    }
+    if (widget.userData?['address']['country'] != null) {
+      address += '${widget.userData?['address']?['country'] ?? ''} - ';
+    }
+    if (widget.userData?['address']['zipCode'] != null) {
+      address += '${widget.userData?['address']?['zipCode'] ?? ''}';
     }
   }
 
@@ -97,11 +51,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      profileData == null
-          ? Center(child: CircularProgressIndicator()) // Show loading until data is fetched
-          :
-      Container(
+      body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
           gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
@@ -151,15 +101,13 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         vertical: MediaQuery.of(context).size.height * 0.02,
                         horizontal: MediaQuery.of(context).size.width * 0.05),
                     children: [
-                      buildMenuItem('Phone Number', userData?['phone']),
-                      buildMenuItem('Address',
-                          '${profileData?['address']['street']}, '
-                          '${profileData?['address']['city']}, '
-                          '${profileData?['address']['state']}, '
-                          '${profileData?['address']['country']} - '
-                          '${profileData?['address']['zipCode']}'),
+                      buildMenuItem('Phone Number', widget.userData?['phone'] ?? ''),
+                      buildMenuItem('Address', address),
                       buildMenuItem('Language', 'English'),
-                      buildMenuItem('Age', calculateAge(DateTime.parse(profileData!['dob'])).toString()),
+                      buildMenuItem('Age',
+                          widget.userData?['dob'] != null
+                              ? calculateAge(DateTime.parse(widget.userData!['dob'])).toString()
+                              : ''),
                       buildMenuItem('Ride History', ''),
                       buildMenuItem('Notification', '')
                     ],
@@ -209,7 +157,19 @@ class _MyAccountPageState extends State<MyAccountPage> {
             Icons.arrow_forward_ios,
             size: 16,
           ),
-          onTap: () {},
+          onTap: () async {
+            // if (title == 'Phone Number') {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => EditPhoneNumberPage(
+            //           userId: widget.userId,
+            //           currentPhoneNumber: userData?['phone'] ?? '',
+            //         ),
+            //       ),
+            //     ).then((_) => _fetchUserData()); // Refresh on return
+            //   }
+          },
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height*0.006),

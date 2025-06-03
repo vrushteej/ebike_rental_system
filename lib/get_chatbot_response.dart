@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<String> getChatbotResponse(String userMessage) async {
-  final url = Uri.parse("https://5d6a-183-87-190-240.ngrok-free.app/chat");  // The URL for your Flask API
+  final url = Uri.parse("https://ccmap-chatbot.onrender.com/chat");  // The URL for your Flask API
 
   final response = await http.post(
     url,

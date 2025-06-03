@@ -4,6 +4,8 @@ import 'package:ebike_rental_system/login_screen.dart';
 import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:ebike_rental_system/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'main.dart';
@@ -19,52 +21,23 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 3;
-  Map<String, dynamic>? profileData;
+  Map<String, dynamic>? userData;
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    _fetchProfileData();
-  }
-
-  // Fetch profile data from the backend
-  Future<void> _fetchProfileData() async {
-    try {
-      var url = Uri.parse("http://192.168.0.128:3000/profile/${widget.userId}"); // Replace with your backend URL
-      var response = await http.get(
-        url,
-        headers: {"Content-Type": "application/json"}
-      );
-
-      var responseData = jsonDecode(response.body);
-      print("Fetch Profile Response: ${response.statusCode}");
-
-      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-        if(responseData['profile']!=null){
-          setState(() {
-            profileData = responseData['profile'];
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData["message"] ?? "Failed to fetch data")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
-    }
+    ApiService().fetchUserData(context, widget.userId).then((data) {
+      setState(() {
+        userData = data;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      profileData == null
-          ? Center(child: CircularProgressIndicator()) // Show loading until data is fetched
-          :
-      Container(
+      body: Container(
         // Applying linear gradient from top to bottom
         decoration: BoxDecoration(
           gradient: Theme.of(context).extension<CustomTheme>()!.primaryGradient,
@@ -84,7 +57,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     alignment: Alignment.topRight,
                     child: IconButton(
                       icon: const Icon(Icons.logout, color: Colors.black),
-                      onPressed: () {
+                      onPressed: () async {
+                        await _storage.deleteAll();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -107,7 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 12),
                   // User Name
                   Text(
-                    '${profileData?['firstName']} ${profileData?['lastName']}',
+                    userData != null
+                        ? (userData?['firstName'] != null || userData?['lastName'] != null
+                        ? '${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}'.trim()
+                        : '${userData?['email']}')
+                        : 'User',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 24,
@@ -199,7 +177,10 @@ class _ProfilePageState extends State<ProfilePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MyAccountPage(userId: widget.userId),
+                  builder: (context) => MyAccountPage(
+                    userId: widget.userId,
+                    userData: userData,
+                  ),
                 ),
               );
             }

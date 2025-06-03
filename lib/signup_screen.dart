@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:ebike_rental_system/verfication_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'api_service.dart';
 import 'login_screen.dart';
 import 'main.dart';
 
@@ -18,8 +21,6 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -27,8 +28,6 @@ class _SignupScreenState extends State<SignupScreen> {
   // Error messages
   String? emailError;
   String? phoneError;
-  String? firstNameError;
-  String? lastNameError;
 
   bool _obscureText=true;
 
@@ -58,108 +57,60 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
-  // Validate first name
-  String? validateFirstName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'First name cannot be empty';
-    }
-    return null;
-  }
-
-  // Validate last name
-  String? validateLastName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Last name cannot be empty';
-    }
-    return null;
-  }
+  // // Validate first name
+  // String? validateFirstName(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return 'First name cannot be empty';
+  //   }
+  //   return null;
+  // }
+  //
+  // // Validate last name
+  // String? validateLastName(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return 'Last name cannot be empty';
+  //   }
+  //   return null;
+  // }
 
   // Sign up method
   void signUp(BuildContext context) async {
+    // Validate email and phone before proceeding
     setState(() {
       emailError = validateEmail(emailController.text);
       phoneError = validatePhone(phoneController.text);
-      firstNameError = validateFirstName(firstNameController.text);
-      lastNameError = validateLastName(lastNameController.text);
     });
 
-    if (emailError == null && phoneError == null && firstNameError == null && lastNameError == null) {
-      // Proceed with signup if there are no errors
-      final String apiUrl = "http://192.168.0.128:3000/user/register";
+    // Early exit if there are validation errors
+    if (emailError != null || phoneError != null) {
+      print("Email or Phone validation failed.");
+      return; // Do not proceed if there are validation errors
+    }
 
-      final Map<String, String> userData = {
-        "first_name": firstNameController.text,
-        "last_name": lastNameController.text,
-        "email": emailController.text,
-        "phone": phoneController.text,
-        "password": passwordController.text
-      };
+    print("Email: ${emailController.text} and Phone: ${phoneController.text}");
 
-      try {
-        final response = await http.post(
-          Uri.parse(apiUrl),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(userData),
+    var result = await ApiService().signUp(
+      emailController.text,
+      phoneController.text,
+      passwordController.text,
+    );
+
+    if (result['status'] == 'success') {
+      String userId = result['userId'];
+      String? token = result['token'];
+      print("User ID: $userId");
+      if (userId.isNotEmpty && token != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId, token: token)),
         );
-        var responseData = jsonDecode(response.body);
-        print("Register Response: ${response.statusCode}");
-        String userId = responseData["userId"];
-
-        if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-          String userId = responseData['user']['userId'];
-
-          // Create profile automatically
-          final String profileApiUrl = "http://192.168.0.128:3000/profile/$userId";
-          final Map<String, dynamic> profileData = {
-            "user_id": userId,
-            "firstName": responseData['user']['first_name'],
-            "lastName": responseData['user']['last_name'],
-            "address": {
-              "street": "",
-              "city": "",
-              "state": "",
-              "country": "",
-              "zipCode": "",
-            },
-            "dob": "",
-            "gender": "",
-          };
-
-          try {
-            final profileResponse = await http.post(
-              Uri.parse(profileApiUrl),
-              headers: {"Content-Type": "application/json"},
-              body: jsonEncode(profileData),
-            );
-
-            if (profileResponse.statusCode == 200 || profileResponse.statusCode == 201 || profileResponse.statusCode == 204) {
-              print("Profile created successfully!");
-            } else {
-              print("Failed to create profile: ${profileResponse.body}");
-            }
-          } catch (error) {
-            print("Error creating profile: $error");
-          }
-
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => VerificationScreen(userId: userId)));
-        } else {
-          print('Response Body: $responseData');
-          String errorMessage = responseData["message"] ?? "Signup failed";
-          if (response.statusCode == 400) {
-            errorMessage = 'Bad Request: ${responseData["message"]}';
-          } else if (response.statusCode == 500) {
-            errorMessage = 'Server error, please try again later';
-          }
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(errorMessage)));
-        }
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error connecting to server")),
-        );
-        print("Error: $error");
+      } else {
+        print("User ID is missing in response.");
       }
+    } else {
+      // Show error message
+      String errorMessage = result['message'] ?? 'Signup failed';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
     }
   }
 
@@ -238,34 +189,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     child: Column(
                       children: [
-                        // First Name Field
-                        TextFormField(
-                          controller: firstNameController,
-                          validator: validateFirstName,
-                          decoration: InputDecoration(
-                            hintText: 'First Name',
-                            border: InputBorder.none,
-                            errorText: firstNameError,
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                        Divider(color: Colors.grey),
-                        SizedBox(height: 16),
-
-                        // Last Name Field
-                        TextFormField(
-                          controller: lastNameController,
-                          validator: validateLastName,
-                          decoration: InputDecoration(
-                            hintText: 'Last Name',
-                            border: InputBorder.none,
-                            errorText: lastNameError,
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                        Divider(color: Colors.grey),
-                        SizedBox(height: 16),
-
                         // Email Field
                         TextFormField(
                           controller: emailController,

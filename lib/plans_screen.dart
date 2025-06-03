@@ -1,9 +1,135 @@
+import 'package:ebike_rental_system/payment_confirmation_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import 'api_service.dart';
 import 'main.dart';
 
-class PlansScreen extends StatelessWidget {
-  const PlansScreen({super.key});
+class PlansScreen extends StatefulWidget {
+  final String userId; // User ID to identify the user
+  const PlansScreen({super.key, required this.userId});
+
+  @override
+  State<PlansScreen> createState() => _PlansScreenState();
+}
+
+class _PlansScreenState extends State<PlansScreen> {
+  late Razorpay _razorpay;
+  late double _selectedAmount;
+  late String _selectedPaymentMethod;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize Razorpay instance
+    _razorpay = Razorpay();
+
+    // Add listeners for payment success and failure
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+
+    ApiService().fetchUserData(context, widget.userId).then((data) {
+      setState(() {
+        userData = data;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // Remove listeners
+    _razorpay.clear();
+  }
+
+  // Payment success handler
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    print("Payment Success: ${response.paymentId}");
+
+    // Retrieve payment details
+    String paymentId = response.paymentId!;
+    String orderId = response.orderId!;
+    String signature = response.signature!;
+
+    // Call both createPaymentOrder and verifyPayment after successful payment
+    ApiService().createPaymentOrder(widget.userId, 'rideId123', paymentId).then((orderResponse) {
+      if (orderResponse['success']) {
+        print("Payment order created successfully on the backend.");
+
+        // Now verify the payment after the order is created
+        ApiService().verifyPayment(paymentId, orderId, signature).then((verifyResponse) {
+          if (verifyResponse['success']) {
+            print("Payment verified successfully.");
+
+            // After verification, navigate to the confirmation screen
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PaymentConfirmationScreen(
+                  paymentId: paymentId,
+                  userId: widget.userId,
+                  amount: _selectedAmount,
+                  paymentMethod: _selectedPaymentMethod ?? 'Razorpay',
+                ),
+              ),
+            );
+          } else {
+            print("Payment verification failed.");
+          }
+        }).catchError((error) {
+          print("Error verifying payment: $error");
+        });
+      } else {
+        print("Error creating payment order on the backend.");
+      }
+    }).catchError((error) {
+      print("Error calling createPaymentOrder API: $error");
+    });
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    print("External Wallet: ${response.walletName}");
+    setState(() {
+      _selectedPaymentMethod = response.walletName ?? 'Wallet';
+    });
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    print("Payment Failure: ${response.message}");
+    // Log the response to check its structure
+    print("Payment Failure Response: ${response.toString()}");
+
+    if (response.error != null) {
+      // Handle the error response here
+      print("Error: ${response.error}");
+    }
+  }
+
+  void _openRazorpay(double amount, String? description) {
+    _selectedAmount = amount;
+    var options = {
+      'key': dotenv.env['RAZORPAY_KEY_ID']!, // Ensure key is loaded correctly
+      'amount': (amount * 100).toInt(), // Amount in paise
+      'name': 'Ebike Rental',
+      'description': description,
+      'prefill': {
+        'contact': userData?['phone'] ?? '',
+        'email': userData?['email'] ?? '',
+      },
+      'external': {
+        'wallets': ['googlepay', 'paytm']
+      }
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +343,9 @@ class PlanCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              _PlansScreenState()._openRazorpay(double.parse(price.replaceAll('₹', '').replaceAll(',', '')), title);
+            },
             child: Center(
               child: Text(buttonText),
             ),
