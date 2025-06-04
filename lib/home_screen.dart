@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ebike_rental_system/auth_service.dart';
 import 'login_screen.dart';
 import 'map_screen.dart'; // Import your OpenStreetMap screen
 

@@ -4,12 +4,10 @@ import 'package:ebike_rental_system/api_service.dart';
 import 'package:ebike_rental_system/home_screen.dart';
 import 'package:ebike_rental_system/signup_screen.dart';
 import 'package:ebike_rental_system/verfication_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Add this for TextInputFormatter
 import 'package:http/http.dart' as http;
 
-import 'auth_service.dart';
 import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,13 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true; // Track visibility of password
 
   void googleLogin() async {
-    AuthService authService = AuthService();
-    User? user = await authService.signInWithGoogle();
-
-    if (user != null) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
-    }
+    // AuthService authService = AuthService();
+    // User? user = await authService.signInWithGoogle();
+    //
+    // if (user != null) {
+    //   Navigator.pushReplacement(
+    //       context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    // }
   }
 
   // Method to check for valid phone number

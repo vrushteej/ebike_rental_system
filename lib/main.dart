@@ -1,8 +1,3 @@
-import 'dart:io';
-
-import 'package:ebike_rental_system/map_screen.dart';
-import 'package:ebike_rental_system/payment_confirmation_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'landing_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: 'assets/.env');
-  await Firebase.initializeApp();
-  print('Firebase Initialized');
   runApp(MyApp());
 }
 

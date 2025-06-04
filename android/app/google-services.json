@@ -34,7 +34,7 @@
               "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.bikeSharing"
+                "bundle_id": "com.example.ebike_sharing_system"
               }
             }
           ]
@@ -78,7 +78,7 @@
               "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.bikeSharing"
+                "bundle_id": "com.example.ebike_sharing_system"
               }
             }
           ]
@@ -114,7 +114,7 @@
               "client_id": "387858945348-h347dbt6ngea9mcfpe8flputrv47bl7v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.bikeSharing"
+                "bundle_id": "com.example.ebike_sharing_system"
               }
             }
           ]
