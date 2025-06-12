@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Add this for TextInputFormatter
 import 'package:http/http.dart' as http;
 
+import 'custom_theme.dart';
 import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -84,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customTheme = Theme.of(context).extension<CustomTheme>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -256,11 +258,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Ink(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)], // Your gradient colors
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
+                            // gradient: LinearGradient(
+                            //   colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)], // Your gradient colors
+                            //   begin: Alignment.topCenter,
+                            //   end: Alignment.bottomCenter,
+                            // ),
+                            gradient: customTheme?.primaryGradient,
                             borderRadius: BorderRadius.circular(32), // Rounded corners
                           ),
                           child: Container(

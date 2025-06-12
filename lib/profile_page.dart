@@ -3,17 +3,19 @@ import 'package:ebike_rental_system/chat_screen.dart';
 import 'package:ebike_rental_system/login_screen.dart';
 import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
+import 'package:ebike_rental_system/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ebike_rental_system/api_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+import 'custom_theme.dart';
 import 'main.dart';
 import 'my_account_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String userId; // User ID to identify the user
-  const ProfilePage({super.key, required this.userId});
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -23,11 +25,13 @@ class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 3;
   Map<String, dynamic>? userData;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
-    ApiService().fetchUserData(context, widget.userId).then((data) {
+    userId = Provider.of<UserProvider>(context, listen: false).userId;
+    ApiService().fetchUserData(context, userId).then((data) {
       setState(() {
         userData = data;
       });
@@ -59,6 +63,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       icon: const Icon(Icons.logout, color: Colors.black),
                       onPressed: () async {
                         await _storage.deleteAll();
+                        final userProvider = Provider.of<UserProvider>(context, listen: false);
+                        userProvider.clearUserId();
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -135,11 +141,11 @@ class _ProfilePageState extends State<ProfilePage> {
           });
           // Navigate to different screens based on the selected index
           if (index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()));
           } else if (index == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(userId: widget.userId)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
           } else if (index == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen(userId: widget.userId)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen()));
           }
         },
         type: BottomNavigationBarType.fixed,
@@ -178,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => MyAccountPage(
-                    userId: widget.userId,
+                    userId: userId,
                     userData: userData,
                   ),
                 ),

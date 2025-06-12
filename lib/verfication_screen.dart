@@ -1,7 +1,10 @@
 import 'package:ebike_rental_system/home_screen.dart';
 import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/otp_field.dart';
+import 'package:ebike_rental_system/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'custom_theme.dart';
 import 'login_screen.dart';
 import 'main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -68,6 +71,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customTheme = Theme.of(context).extension<CustomTheme>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -143,9 +147,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           await storage.write(key: 'isLoggedIn', value: 'true');
                           await storage.write(key: 'userId', value: widget.userId);
                           await storage.write(key: 'authToken', value: widget.token);
+                          Provider.of<UserProvider>(context, listen: false).setUserId(widget.userId);
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId)),
+                            MaterialPageRoute(builder: (context) => MapScreen()),
                                 (Route<dynamic> route) => false,
                           );
                         },
@@ -159,11 +164,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         ),
                         child: Ink(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)], // Your gradient colors
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
+                            // gradient: LinearGradient(
+                            //   colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)], // Your gradient colors
+                            //   begin: Alignment.topCenter,
+                            //   end: Alignment.bottomCenter,
+                            // ),
+                            gradient: customTheme?.primaryGradient,
                             borderRadius: BorderRadius.circular(32), // Rounded corners
                           ),
                           child: Container(

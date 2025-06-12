@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:ebike_rental_system/providers/user_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'custom_theme.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
 import 'map_screen.dart';
@@ -32,6 +35,8 @@ class _LandingPageState extends State<LandingPage> {
     String? storedUserId = await storage.read(key: 'userId');
 
     if (loginStatus == 'true' && storedUserId != null) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.setUserId(storedUserId);
       setState(() {
         _isLoggedIn = 'true';
         userId = storedUserId;
@@ -42,7 +47,7 @@ class _LandingPageState extends State<LandingPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MapScreen(userId: userId!)),
+          MaterialPageRoute(builder: (context) => MapScreen()),
         );
       }
     } else {

@@ -59,7 +59,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => MyWalletScreen(userId: userId)),
+                  MaterialPageRoute(builder: (context) => MyWalletScreen()),
                       (route) => false,
                 );
               },

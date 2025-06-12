@@ -1,15 +1,18 @@
+import 'package:ebike_rental_system/constants/colors.dart';
 import 'package:ebike_rental_system/map_screen.dart';
 import 'package:ebike_rental_system/my_wallet_screen.dart';
 import 'package:ebike_rental_system/profile_page.dart';
+import 'package:ebike_rental_system/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'chat_socket_service.dart';
+import 'custom_theme.dart';
 import 'get_chatbot_response.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'main.dart'; // Import the chatbot response function
 
 class ChatScreen extends StatefulWidget {
-  final String userId; // User ID to identify the user
-  const ChatScreen({super.key, required this.userId});
+  const ChatScreen({super.key});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -19,13 +22,14 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = []; // Stores messages
   late ChatSocketService _chatSocket;
+  String userId = '';
 
   int _selectedIndex = 1;
 
   @override
   void initState() {
     super.initState();
-
+    userId = Provider.of<UserProvider>(context, listen: false).userId;
     _chatSocket = ChatSocketService();
     _chatSocket.initSocket();
 
@@ -49,14 +53,14 @@ class _ChatScreenState extends State<ChatScreen> {
     _controller.clear(); // Clear input field
 
     // Get chatbot response
-    // String response = await getChatbotResponse(message);
-    //
-    // // Add bot response after a short delay
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   setState(() {
-    //     _messages.add({"sender": "bot", "message": response});
-    //   });
-    // });
+    String response = await getChatbotResponse(message);
+
+    // Add bot response after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _messages.add({"sender": "bot", "message": response});
+      });
+    });
 
 
       _chatSocket.sendMessage(message);
@@ -178,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                             FloatingActionButton(
                               onPressed: _sendMessage,
-                              backgroundColor: Color(0xFF2FEEB6),
+                              backgroundColor: AppColors.primaryColor,
                               mini: true,
                               child: const Icon(
                                 Icons.send,
@@ -205,11 +209,11 @@ class _ChatScreenState extends State<ChatScreen> {
           });
           // Navigate to different screens based on the selected index
           if (index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()));
           } else if (index == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen(userId: widget.userId,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyWalletScreen()));
           } else if (index == 3) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.userId,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
           }
         },
         type: BottomNavigationBarType.fixed,

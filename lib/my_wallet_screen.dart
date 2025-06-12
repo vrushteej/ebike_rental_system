@@ -1,18 +1,21 @@
 import 'package:ebike_rental_system/api_service.dart';
 import 'package:ebike_rental_system/chat_screen.dart';
+import 'package:ebike_rental_system/constants/colors.dart';
 import 'package:ebike_rental_system/payment_confirmation_screen.dart';
 import 'package:ebike_rental_system/plans_screen.dart';
 import 'package:ebike_rental_system/profile_page.dart';
+import 'package:ebike_rental_system/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import 'custom_theme.dart';
 import 'main.dart';
 import 'map_screen.dart';
 
 class MyWalletScreen extends StatefulWidget {
-  final String userId; // User ID to identify the user
-  const MyWalletScreen({super.key, required this.userId});
+  const MyWalletScreen({super.key});
 
   @override
   State<MyWalletScreen> createState() => MyWalletScreenState();
@@ -24,17 +27,19 @@ class MyWalletScreenState extends State<MyWalletScreen> {
   late String _selectedPaymentMethod;
   late Razorpay _razorpay;
   Map<String, dynamic>? userData;
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
+    userId = Provider.of<UserProvider>(context, listen: false).userId;
     _razorpay = Razorpay();
 
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 
-    ApiService().fetchUserData(context, widget.userId).then((data) {
+    ApiService().fetchUserData(context, userId).then((data) {
       setState(() {
         userData = data;
       });
@@ -56,7 +61,7 @@ class MyWalletScreenState extends State<MyWalletScreen> {
     String signature = response.signature!;
 
     // Call both createPaymentOrder and verifyPayment after successful payment
-    ApiService().createPaymentOrder(widget.userId, 'rideId123', paymentId).then((orderResponse) {
+    ApiService().createPaymentOrder(userId, 'rideId123', paymentId).then((orderResponse) {
       if (orderResponse['success']) {
         print("Payment order created successfully on the backend.");
 
@@ -71,7 +76,7 @@ class MyWalletScreenState extends State<MyWalletScreen> {
               MaterialPageRoute(
                 builder: (context) => PaymentConfirmationScreen(
                   paymentId: paymentId,
-                  userId: widget.userId,
+                  userId: userId,
                   amount: _selectedAmount,
                   paymentMethod: _selectedPaymentMethod ?? 'Razorpay',
                 ),
@@ -219,7 +224,7 @@ class MyWalletScreenState extends State<MyWalletScreen> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => PlansScreen(userId: widget.userId)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => PlansScreen(userId: userId)));
                             },
                             child: const Text("+ Top Up"),
                           ),
@@ -253,7 +258,7 @@ class MyWalletScreenState extends State<MyWalletScreen> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
-                                  foregroundColor: Color(0xFF2FEEB6),
+                                  foregroundColor: AppColors.primaryColor,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -301,11 +306,11 @@ class MyWalletScreenState extends State<MyWalletScreen> {
           });
           // Navigate to different screens based on the selected index
           if (index == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(userId: widget.userId,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()));
           } else if (index == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(userId: widget.userId)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
           } else if (index == 3) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.userId)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
           }
         },
         type: BottomNavigationBarType.fixed,
@@ -375,7 +380,7 @@ class RecentTransactions extends StatelessWidget {
           ),
           const Divider(),
           transactionItem("Weekly Pass", "-₹24.99", "Feb 9, 2025", Colors.red),
-          transactionItem("Top Up", "+₹50.00", "Feb 8, 2025", Color(0xFF2FEEB6)),
+          transactionItem("Top Up", "+₹50.00", "Feb 8, 2025", AppColors.primaryColor),
         ],
       ),
     );

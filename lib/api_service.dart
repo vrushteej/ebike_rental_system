@@ -163,7 +163,7 @@ class ApiService {
   }
 
   // Fetch nearest stations using latitude and longitude
-  Future<List<dynamic>> findNearestStations(double latitude, double longitude) async {
+  Future<List<dynamic>> findNearestStations(double? latitude, double? longitude) async {
     final url = Uri.parse('$baseUrl/station/all');
 
     try {

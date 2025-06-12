@@ -6,6 +6,7 @@ import 'package:ebike_rental_system/verfication_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'api_service.dart';
+import 'custom_theme.dart';
 import 'login_screen.dart';
 import 'main.dart';
 
@@ -116,6 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customTheme = Theme.of(context).extension<CustomTheme>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -275,11 +277,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           child: Ink(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Color(0xFF2FEEB6), Color(0xFFb8f9e6)], // Your gradient colors
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
+                              //
+                              gradient: customTheme?.primaryGradient,
                               borderRadius: BorderRadius.circular(32), // Rounded corners
                             ),
                             child: Container(
